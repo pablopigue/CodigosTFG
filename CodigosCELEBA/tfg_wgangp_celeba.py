@@ -112,7 +112,7 @@ def compute_gradient_penalty(critic, real_samples, fake_samples):
     return gradient_penalty
 
 
-# El crítico NO puede usar BatchNorm con GP.
+# El crítico no puede usar BatchNorm con GP.
 # Se usa GroupNorm como sustituto.
 class Critic(nn.Module):
     def __init__(self):
@@ -343,7 +343,7 @@ for run in range(NUM_RUNS):
         )
 
 # ==========================================
-# 7. POST-PROCESADO Y PROMEDIADO FINAL
+# 7. POST-PROCESADO
 # ==========================================
 print("\nGenerando gráficas promediadas...", flush=True)
 

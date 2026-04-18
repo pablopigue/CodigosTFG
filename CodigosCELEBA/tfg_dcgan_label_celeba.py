@@ -299,7 +299,7 @@ for run in range(NUM_RUNS):
         )
 
 # ==========================================
-# 7. POST-PROCESADO Y PROMEDIADO FINAL
+# 7. POST-PROCESADO
 # ==========================================
 print("\nGenerando gráficas promediadas...", flush=True)
 

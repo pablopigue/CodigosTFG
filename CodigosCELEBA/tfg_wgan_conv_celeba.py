@@ -109,7 +109,7 @@ class Critic(nn.Module):
             nn.Conv2d(256, 512, 4, 2, 1, bias=False),
             nn.BatchNorm2d(512),
             nn.LeakyReLU(0.2, inplace=True),
-            # Sin Sigmoid: salida escalar sin acotar (puntuación Wasserstein)
+            # Sin Sigmoid: salida escalar sin acotar
             nn.Conv2d(512, 1, 4, 1, 0, bias=False)
         )
     def forward(self, x):
@@ -171,7 +171,6 @@ for run in range(NUM_RUNS):
     gen.apply(weights_init)
     critic.apply(weights_init)
 
-    # RMSprop sin momentum, tal como especifica el paper original de WGAN.
     opt_gen = optim.RMSprop(gen.parameters(), lr=LR)
     opt_critic = optim.RMSprop(critic.parameters(), lr=LR)
 
@@ -191,7 +190,7 @@ for run in range(NUM_RUNS):
             real = data[0].to(DEVICE)
             batch_size_curr = real.shape[0]
 
-            # 1. ENTRENAR CRÍTICO (CRITIC_ITERATIONS veces consecutivas)
+            # 1. ENTRENAR CRÍTICO CRITIC_ITERATIONS veces consecutivas
             for _ in range(CRITIC_ITERATIONS):
                 noise = torch.randn(batch_size_curr, Z_DIM).to(DEVICE)
                 fake = gen(noise)
@@ -210,7 +209,7 @@ for run in range(NUM_RUNS):
 
             epoch_loss_c += loss_critic.item()
 
-            # 2. ENTRENAR GENERADOR (1 vez, con ruido nuevo)
+            # 2. ENTRENAR GENERADOR 1 vez, con ruido nuevo
             noise = torch.randn(batch_size_curr, Z_DIM).to(DEVICE)
             fake_for_gen = gen(noise)
             loss_gen = -torch.mean(critic(fake_for_gen).view(-1))
@@ -313,7 +312,7 @@ for run in range(NUM_RUNS):
         )
 
 # ==========================================
-# 7. POST-PROCESADO Y PROMEDIADO FINAL
+# 7. POST-PROCESADO
 # ==========================================
 print("\nGenerando gráficas promediadas...", flush=True)
 

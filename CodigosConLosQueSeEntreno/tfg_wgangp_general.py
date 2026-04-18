@@ -129,7 +129,7 @@ def compute_gradient_penalty(critic, real_samples, fake_samples):
     return gradient_penalty
 
 
-# El crítico NO puede usar BatchNorm: el GP se calcula por muestra individual
+# El crítico nO puede usar BatchNorm: el GP se calcula por muestra individual
 # y BatchNorm mezcla estadísticas entre muestras, invalidando el cálculo.
 # Se usa GroupNorm como sustituto.
 class Critic(nn.Module):
@@ -226,7 +226,7 @@ for run in range(NUM_RUNS):
             real = data[0].to(DEVICE)
             batch_size_curr = real.shape[0]
 
-            # 1. ENTRENAR CRÍTICO (CRITIC_ITERATIONS veces consecutivas)
+            # 1. ENTRENAR CRÍTICO CRITIC_ITERATIONS veces consecutivas
             for _ in range(CRITIC_ITERATIONS):
                 noise = torch.randn(batch_size_curr, Z_DIM).to(DEVICE)
                 fake = gen(noise)
@@ -244,7 +244,7 @@ for run in range(NUM_RUNS):
             epoch_loss_c += (-(torch.mean(critic_real) - torch.mean(critic_fake))).item()
             epoch_gp += gp.item()
 
-            # 2. ENTRENAR GENERADOR (1 vez, con ruido nuevo)
+            # 2. ENTRENAR GENERADOR 1 vez, con ruido nuevo
             noise = torch.randn(batch_size_curr, Z_DIM).to(DEVICE)
             fake_for_gen = gen(noise)
             loss_gen = -torch.mean(critic(fake_for_gen).view(-1))
@@ -362,7 +362,7 @@ for run in range(NUM_RUNS):
         )
 
 # ==========================================
-# 7. POST-PROCESADO Y PROMEDIADO FINAL
+# 7. POST-PROCESADO
 # ==========================================
 print("\nGenerando gráficas promediadas...", flush=True)
 
