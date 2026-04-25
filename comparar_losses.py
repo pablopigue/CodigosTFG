@@ -267,7 +267,7 @@ def procesar_dataset(base_dir, dataset_name):
             os.path.join(out_dir, "comparativa_losses_bce.png")
         )
 
-    # ---- MODELOS WASSERSTEIN ----
+    # MODELOS WASSERSTEIN
     datos_wass = {}
     datos_gp = {}
     for clave, cfg in WASS_MODELOS.items():
