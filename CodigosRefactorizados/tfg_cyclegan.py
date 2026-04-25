@@ -34,7 +34,6 @@ LAMBDA_IDENTITY = 5.0
 
 # Frecuencias
 SAVE_IMG_FREQ = 5
-SAVE_MODEL_FREQ = 10
 FID_FREQ = 10                # Calcular FID cada N épocas
 FID_BATCH_SIZE = 8           # Tamaño del batch al generar imágenes para FID
 
@@ -92,7 +91,7 @@ train_transforms = transforms.Compose([
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
 
-# Sin augmentación para test (FID y muestras de control)
+# Sin augmentation para test
 test_transforms = transforms.Compose([
     transforms.Resize((256, 256), Image.BICUBIC),
     transforms.ToTensor(),
@@ -370,6 +369,12 @@ testB_loader = SingleDomainLoader(test_dataset, 'B', FID_BATCH_SIZE)
 # ============================================================
 print("Comenzando bucle de entrenamiento...", flush=True)
 
+# Trackers para guardar pesos solo cuando mejora el FID
+best_fid_AB = float('inf')
+best_fid_BA = float('inf')
+best_epoch_AB = -1
+best_epoch_BA = -1
+
 # Histórico de métricas (una fila por época)
 history = {
     'epoch': [], 'loss_G': [], 'loss_D_A': [], 'loss_D_B': [],
@@ -495,6 +500,27 @@ for epoch in range(EPOCHS):
         print(f"  FID(A→B) = {fid_AB:.2f} | FID(B→A) = {fid_BA:.2f}",
               flush=True)
 
+        # Guardar pesos solo si el FID mejora respecto al mejor visto
+        if fid_AB < best_fid_AB:
+            best_fid_AB = fid_AB
+            best_epoch_AB = epoch + 1
+            torch.save(G_AB.state_dict(),
+                       f"{EXPERIMENT_DIR}/models/G_AB_best.pth")
+            torch.save(D_B.state_dict(),
+                       f"{EXPERIMENT_DIR}/models/D_B_best.pth")
+            print(f"  [BEST A→B] FID={fid_AB:.2f} en época {epoch+1}, "
+                  f"pesos guardados.", flush=True)
+
+        if fid_BA < best_fid_BA:
+            best_fid_BA = fid_BA
+            best_epoch_BA = epoch + 1
+            torch.save(G_BA.state_dict(),
+                       f"{EXPERIMENT_DIR}/models/G_BA_best.pth")
+            torch.save(D_A.state_dict(),
+                       f"{EXPERIMENT_DIR}/models/D_A_best.pth")
+            print(f"  [BEST B→A] FID={fid_BA:.2f} en época {epoch+1}, "
+                  f"pesos guardados.", flush=True)
+
     # Guardar histórico
     history['epoch'].append(epoch + 1)
     history['loss_G'].append(avg_loss_G)
@@ -507,7 +533,7 @@ for epoch in range(EPOCHS):
     history['fid_BA'].append(fid_BA)
     history['lr'].append(current_lr)
 
-    # Guardar CSV
+    # Guardar CSV incremental (sobrescribir cada época)
     pd.DataFrame(history).to_csv(
         f"{EXPERIMENT_DIR}/logs/metrics_cyclegan.csv", index=False)
 
@@ -556,20 +582,6 @@ for epoch in range(EPOCHS):
             save_path = f"{EXPERIMENT_DIR}/images/epoch_{epoch+1}.png"
             save_image(image_grid, save_path, nrow=3, normalize=False)
             print(f"--> Imagen de control guardada: {save_path}", flush=True)
-
-    # ---------------------------------------------
-    # Checkpoints
-    # ---------------------------------------------
-    if (epoch + 1) % SAVE_MODEL_FREQ == 0:
-        torch.save(G_AB.state_dict(),
-                   f"{EXPERIMENT_DIR}/models/G_AB_{epoch+1}.pth")
-        torch.save(G_BA.state_dict(),
-                   f"{EXPERIMENT_DIR}/models/G_BA_{epoch+1}.pth")
-        torch.save(D_A.state_dict(),
-                   f"{EXPERIMENT_DIR}/models/D_A_{epoch+1}.pth")
-        torch.save(D_B.state_dict(),
-                   f"{EXPERIMENT_DIR}/models/D_B_{epoch+1}.pth")
-        print(f"--> Checkpoints guardados en época {epoch+1}", flush=True)
 
 
 # ============================================================
@@ -680,9 +692,14 @@ print(f"¡Hecho! Todo guardado en {EXPERIMENT_DIR}", flush=True)
 print("\n=== RESUMEN ===", flush=True)
 print(f"FID inicial    A→B: {df['fid_AB'].iloc[0]:.2f} | "
       f"B→A: {df['fid_BA'].iloc[0]:.2f}", flush=True)
-print(f"FID mejor      A→B: {df['fid_AB'].min():.2f} (época "
-      f"{int(df.loc[df['fid_AB'].idxmin(), 'epoch'])}) | "
-      f"B→A: {df['fid_BA'].min():.2f} (época "
-      f"{int(df.loc[df['fid_BA'].idxmin(), 'epoch'])})", flush=True)
+print(f"FID mejor      A→B: {best_fid_AB:.2f} (época {best_epoch_AB}) | "
+      f"B→A: {best_fid_BA:.2f} (época {best_epoch_BA})", flush=True)
 print(f"FID final      A→B: {df['fid_AB'].iloc[-1]:.2f} | "
       f"B→A: {df['fid_BA'].iloc[-1]:.2f}", flush=True)
+print(f"\nPesos guardados en {EXPERIMENT_DIR}/models/:", flush=True)
+print(f"  Mejor A→B: G_AB_best.pth, D_B_best.pth (época {best_epoch_AB})",
+      flush=True)
+print(f"  Mejor B→A: G_BA_best.pth, D_A_best.pth (época {best_epoch_BA})",
+      flush=True)
+print(f"  Final:     G_AB_final.pth, G_BA_final.pth, "
+      f"D_A_final.pth, D_B_final.pth", flush=True)
