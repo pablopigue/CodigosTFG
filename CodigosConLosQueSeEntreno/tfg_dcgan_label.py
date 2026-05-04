@@ -18,7 +18,7 @@ DATASET_NAME = "MNIST"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 LR = 0.0002
-BETA1 = 0.5   # Estándar DCGAN. Referencia: Radford et al. (2015), arXiv:1511.06434
+BETA1 = 0.5
 BATCH_SIZE = 128
 Z_DIM = 100
 SAVE_IMG_FREQ = 5
@@ -209,7 +209,7 @@ for run in range(NUM_RUNS):
             opt_disc.step()
             epoch_loss_d += (loss_disc_real + loss_disc_fake).item()
 
-            # Generador apunta a 1.0, no usa smoothing
+            # Generador no usa smoothing
             gen.zero_grad()
             output_gen = disc(fake)
             loss_gen = criterion(output_gen, torch.ones(batch_size_curr, device=DEVICE))

@@ -2,8 +2,8 @@
 benchmark_tiempos.py
 
 Mide el tiempo puro de entrenamiento por época de cada combinación
-modelo × dataset. No calcula FID/IS ni guarda imágenes, para obtener
-una medida limpia del coste computacional del entrenamiento adversario.
+modelo x dataset. No calcula FID/IS ni guarda imágenes, para obtener
+una medida limpia del coste computacional del entrenamiento.
 
 Metodología:
     - 1 época de warmup por combinación (NO se cronometra): permite que
@@ -56,7 +56,7 @@ DATASETS = [
     ("CelebA",       64, 3, DATA_DIR_CELEBA),
 ]
 
-# Hiperparámetros específicos de cada modelo (tal como en los scripts)
+# Hiperparámetros específicos de cada modelo
 MODEL_CONFIGS = {
     "Vanilla GAN": {
         "arch": "MLP", "loss": "BCE",
@@ -309,7 +309,7 @@ def step_vanilla_or_dcgan(model_name, real, gen, disc, opt_gen, opt_disc,
     if cfg["arch"] == "MLP":
         real = real.view(-1, img_dim)
 
-    # --- Discriminador ---
+    # Discriminador
     disc.zero_grad()
     output_real = disc(real).view(-1)
     label_real_value = cfg.get("label_smoothing", 1.0)
@@ -325,7 +325,7 @@ def step_vanilla_or_dcgan(model_name, real, gen, disc, opt_gen, opt_disc,
     loss_d_fake.backward()
     opt_disc.step()
 
-    # --- Generador ---
+    # Generador
     gen.zero_grad()
     output_gen = disc(fake).view(-1)
     loss_g = criterion(output_gen,
@@ -406,7 +406,7 @@ def step_wgan_gp(real, gen, critic, opt_gen, opt_critic):
 
 
 # ============================================================
-# EJECUCIÓN DE UNA COMBINACIÓN MODELO × DATASET
+# EJECUCIÓN DE UNA COMBINACIÓN MODELO x DATASET
 # ============================================================
 
 def run_one_combo(model_name, dataset_name, img_size, channels, data_dir):
@@ -418,7 +418,7 @@ def run_one_combo(model_name, dataset_name, img_size, channels, data_dir):
           f"{channels} ch)")
     print(f"{'='*60}", flush=True)
 
-    # --- Dataset y loader ---
+    # Dataset y loader
     dataset = load_dataset(dataset_name, img_size, channels,
                            data_dir=data_dir)
     loader = DataLoader(dataset, batch_size=cfg["batch_size"],
@@ -426,7 +426,7 @@ def run_one_combo(model_name, dataset_name, img_size, channels, data_dir):
     print(f"  Batches por época: {len(loader)} "
           f"(batch_size={cfg['batch_size']})", flush=True)
 
-    # --- Redes y optimizadores ---
+    # Redes y optimizadores
     gen, net = build_networks(model_name, img_size, channels)
     opt_gen, opt_net = build_optimizers(model_name, gen, net)
     img_dim = channels * img_size * img_size if cfg["arch"] == "MLP" else None

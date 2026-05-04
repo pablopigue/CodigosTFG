@@ -18,7 +18,7 @@ DATASET_NAME = "MNIST"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 LR = 0.0002
-BETA1 = 0.5   # Estándar DCGAN. Referencia: Radford et al. (2015), arXiv:1511.06434
+BETA1 = 0.5
 BATCH_SIZE = 128
 Z_DIM = 100
 SAVE_IMG_FREQ = 5

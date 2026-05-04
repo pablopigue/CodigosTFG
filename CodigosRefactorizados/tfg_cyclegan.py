@@ -207,7 +207,7 @@ class Discriminator(nn.Module):
             # Capa de 512 canales con stride=1
             *block(256, 512, stride=1),
             
-            # Capa de salida con stride=1 y un padding limpio
+            # Capa de salida con stride=1
             nn.Conv2d(512, 1, 4, stride=1, padding=1)
         )
 
@@ -274,7 +274,7 @@ lr_scheduler_D_B = optim.lr_scheduler.LambdaLR(optimizer_D_B,
 
 
 class ReplayBuffer:
-    """Buffer histórico de imágenes generadas (Shrivastava et al. 2017)."""
+    """Buffer histórico de imágenes generadas."""
 
     def __init__(self, max_size=50):
         self.max_size = max_size
@@ -406,14 +406,14 @@ for epoch in range(EPOCHS):
         fake = torch.zeros(real_A.size(0), *D_A(real_A).shape[1:],
                            requires_grad=False).to(DEVICE)
 
-        # ----------------------
+        
         # Entrenar Generadores
-        # ----------------------
+        
         G_AB.train()
         G_BA.train()
         optimizer_G.zero_grad()
 
-        # Identity loss: G_BA(A) ≈ A,  G_AB(B) ≈ B
+        # Identity loss: G_BA(A) aprox A,  G_AB(B) aprox B
         loss_id_A = criterion_identity(G_BA(real_A), real_A)
         loss_id_B = criterion_identity(G_AB(real_B), real_B)
         loss_identity = loss_id_A + loss_id_B          
@@ -439,9 +439,9 @@ for epoch in range(EPOCHS):
         loss_G.backward()
         optimizer_G.step()
 
-        # -------------------------
+        
         # Entrenar Discriminadores
-        # -------------------------
+        
         # D_A
         optimizer_D_A.zero_grad()
         loss_real_A = criterion_GAN(D_A(real_A), valid)
@@ -477,9 +477,9 @@ for epoch in range(EPOCHS):
                   f"Cycle: {loss_cycle.item():.4f}, "
                   f"Id: {loss_identity.item():.4f})", flush=True)
 
-    # ----------------------
+    
     # Fin de la época
-    # ----------------------
+    
     avg_loss_G = epoch_loss_G / n_batches
     avg_loss_D_A = epoch_loss_D_A / n_batches
     avg_loss_D_B = epoch_loss_D_B / n_batches
@@ -488,9 +488,9 @@ for epoch in range(EPOCHS):
     avg_loss_identity = epoch_loss_identity / n_batches
     current_lr = optimizer_G.param_groups[0]['lr']
 
-    # ----------------------
-    # FID periódico
-    # ----------------------
+    
+    # FID
+    
     fid_AB = np.nan
     fid_BA = np.nan
     is_fid_epoch = ((epoch + 1) % FID_FREQ == 0
@@ -536,20 +536,20 @@ for epoch in range(EPOCHS):
     history['fid_BA'].append(fid_BA)
     history['lr'].append(current_lr)
 
-    # Guardar CSV incremental (sobrescribir cada época)
+    # Guardar CSV (sobrescribir cada época)
     pd.DataFrame(history).to_csv(
         f"{EXPERIMENT_DIR}/logs/metrics_cyclegan.csv", index=False)
 
-    # ---------------------------------------------
+    
     # Step de los schedulers
-    # ---------------------------------------------
+    
     lr_scheduler_G.step()
     lr_scheduler_D_A.step()
     lr_scheduler_D_B.step()
 
-    # ---------------------------------------------
+    
     # Imágenes de control
-    # ---------------------------------------------
+    
     if (epoch + 1) % SAVE_IMG_FREQ == 0 or epoch == 0:
         with torch.no_grad():
             G_AB.eval()
@@ -603,9 +603,9 @@ print(f"CSV final guardado: {EXPERIMENT_DIR}/logs/metrics_cyclegan.csv",
       flush=True)
 
 
-# ----------------------
+
 # Plots
-# ----------------------
+
 def save_plot(x, ys, labels, colors, title, xlabel, ylabel, filepath,
               markers=None, stds=None):
     """Helper de ploteo (mismo estilo que utils.save_plot del Cap. 5)."""
@@ -689,9 +689,9 @@ save_plot(
 print(f"Plots guardados en {EXPERIMENT_DIR}/plots/", flush=True)
 print(f"¡Hecho! Todo guardado en {EXPERIMENT_DIR}", flush=True)
 
-# ----------------------
+
 # Resumen final
-# ----------------------
+
 print("\n=== RESUMEN ===", flush=True)
 print(f"FID inicial    A→B: {df['fid_AB'].iloc[0]:.2f} | "
       f"B→A: {df['fid_BA'].iloc[0]:.2f}", flush=True)

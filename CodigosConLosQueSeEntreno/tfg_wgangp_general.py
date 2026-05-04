@@ -19,7 +19,7 @@ DATASET_NAME = "MNIST"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Hiperparámetros estándar WGAN-GP. Referencia: Gulrajani et al. (2017), arXiv:1704.00028
 LR = 0.0001
-BETA1 = 0.0   # betas=(0.0, 0.9) estándar para WGAN-GP
+BETA1 = 0.0
 BETA2 = 0.9
 BATCH_SIZE = 64
 Z_DIM = 100

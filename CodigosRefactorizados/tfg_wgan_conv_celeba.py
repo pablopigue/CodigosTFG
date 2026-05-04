@@ -88,7 +88,7 @@ class Critic(nn.Module):
             nn.Conv2d(256, 512, 4, 2, 1, bias=False),
             nn.BatchNorm2d(512),
             nn.LeakyReLU(0.2, inplace=True),
-            # Sin Sigmoid: salida escalar sin acotar (puntuación Wasserstein)
+            # Sin Sigmoid: salida escalar sin acotar
             nn.Conv2d(512, 1, 4, 1, 0, bias=False)
         )
     def forward(self, x):

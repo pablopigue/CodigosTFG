@@ -82,7 +82,7 @@ class Critic(nn.Module):
             nn.Linear(512, 256),
             nn.LeakyReLU(0.2),
             nn.Linear(256, 1)
-            # Sin Sigmoid: salida escalar sin acotar (puntuación Wasserstein)
+            # Sin Sigmoid: salida escalar sin acotar
         )
     def forward(self, x):
         return self.disc(x)

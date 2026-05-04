@@ -24,7 +24,7 @@ SAVE_IMG_FREQ = 5
 CALC_METRICS_FREQ = 5
 NUM_RUNS = 10
 NUM_EVAL_IMAGES = 10000
-IMG_SIZE = 32   # Unificado a 32
+IMG_SIZE = 32   
 if DATASET_NAME in ["MNIST", "FashionMNIST"]:
     CHANNELS = 1
     EPOCHS = 80
@@ -155,7 +155,6 @@ for run in range(NUM_RUNS):
     gen = Generator().to(DEVICE)
     disc = Discriminator().to(DEVICE)
 
-    # betas=(0.5, 0.999): estándar para GANs. Referencia: Radford et al. (2015), arXiv:1511.06434
     opt_gen = optim.Adam(gen.parameters(), lr=LR, betas=(0.5, 0.999))
     opt_disc = optim.Adam(disc.parameters(), lr=LR, betas=(0.5, 0.999))
     criterion = nn.BCELoss()

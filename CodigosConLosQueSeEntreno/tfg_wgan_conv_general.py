@@ -29,7 +29,7 @@ NUM_EVAL_IMAGES = 10000
 IMG_SIZE = 32
 
 CRITIC_ITERATIONS = 5
-WEIGHT_CLIP = 0.01   # por paper original de Arjovsky et al.
+WEIGHT_CLIP = 0.01   
 
 if DATASET_NAME in ["MNIST", "FashionMNIST"]:
     CHANNELS = 1
@@ -96,7 +96,7 @@ print(f"Subconjunto fijo listo: {len(real_eval_images) * BATCH_SIZE} imágenes r
 # 4. DEFINICIÓN DE CLASES
 # Arquitectura convolucional idéntica a DCGAN.
 # Cambios respecto a DCGAN:
-#   - Crítico sin Sigmoid (salida escalar sin acotar)
+#   - Crítico sin Sigmoid
 #   - Pérdida Wasserstein en lugar de BCE
 #   - Weight clipping para restricción 1-Lipschitz
 #   - RMSprop en lugar de Adam
