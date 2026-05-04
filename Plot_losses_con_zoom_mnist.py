@@ -1,5 +1,5 @@
 """
-Genera la gráfica de pérdidas BCE con un recuadro (inset) de zoom
+Genera la gráfica de pérdidas BCE con un recuadro de zoom
 en el subplot del discriminador para ver Vanilla GAN y DCGAN+LS
 que quedan aplastados por el colapso de DCGAN.
 
@@ -42,8 +42,6 @@ MODELOS = {
 
 # ============================================================
 # CONFIGURACIÓN DE DATASET
-# Cambia BASE_DIR a la ruta de tu carpeta de resultados
-# y DATASET al dataset que quieras graficar.
 # ============================================================
 BASE_DIR = "./ResultadosCodigosGeneralizacion"  
 DATASET = "MNIST"                                

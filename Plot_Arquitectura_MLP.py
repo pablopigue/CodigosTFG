@@ -4,11 +4,11 @@ import matplotlib.patheffects as pe
 import numpy as np
 
 # Paleta 
-C_LINEAR   = "#378ADD"   # azul  → Linear
-C_RELU     = "#1D9E75"   # verde → ReLU
-C_LRELU    = "#BA7517"   # ámbar → LeakyReLU
-C_TANH     = "#7F77DD"   # púrpura → Tanh
-C_SIGMOID  = "#D85A30"   # coral → Sigmoid
+C_LINEAR   = "#378ADD"   # azul -> Linear
+C_RELU     = "#1D9E75"   # verde -> ReLU
+C_LRELU    = "#BA7517"   # ámbar -> LeakyReLU
+C_TANH     = "#7F77DD"   # púrpura -> Tanh
+C_SIGMOID  = "#D85A30"   # coral -> Sigmoid
 C_TEXT     = "#FFFFFF"
 C_LABEL    = "#333333"
 C_ARROW    = "#888888"
@@ -17,7 +17,7 @@ BG         = "#F8F8F6"
 # Arquitecturas
 CHANNELS = 1          # 1 para MNIST/FashionMNIST, 3 para SVHN
 IMG_SIZE = 32
-IMG_DIM  = CHANNELS * IMG_SIZE * IMG_SIZE   # 1024 o 3072
+IMG_DIM  = CHANNELS * IMG_SIZE * IMG_SIZE
 Z_DIM    = 100
 
 discriminator_layers = [

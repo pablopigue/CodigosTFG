@@ -109,10 +109,8 @@ for cfg in DATASETS:
 n_rows = len(all_samples)
 
 # Figura
-# CelebA ocupa el doble de alto (64px vs 32px)
 n_rows = len(all_samples)
 
-# Todas las filas tendrán el mismo peso visual.
 fig_h = n_rows * 1.5 + 0.6  # Altura base proporcional al número de filas
 
 fig = plt.figure(figsize=(N_SAMPLES * 1.15, fig_h), facecolor=BG)
@@ -122,7 +120,7 @@ gs  = gridspec.GridSpec(
     hspace=0.06, # Espacio vertical entre filas
     wspace=0.04, # Espacio horizontal entre columnas
     left=0.10, right=0.995,
-    top=0.90,  bottom=0.02, # Bajamos un poco el 'top' para dar aire al título
+    top=0.90,  bottom=0.02,
 )
 
 # Dibujar imágenes
@@ -136,7 +134,7 @@ for row, ds in enumerate(all_samples):
         else:
             ax.imshow(np.clip(arr, 0, 1))
             
-        ax.set_xticks([]) # Quitamos ticks
+        ax.set_xticks([])
         ax.set_yticks([])
         ax.axis("off")
 

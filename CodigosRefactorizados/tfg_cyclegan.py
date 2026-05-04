@@ -191,21 +191,24 @@ class Discriminator(nn.Module):
         super().__init__()
         channels, _, _ = input_shape
 
-        def block(in_filters, out_filters, normalize=True):
-            layers = [nn.Conv2d(in_filters, out_filters, 4, stride=2,
-                                padding=1)]
+        def block(in_filters, out_filters, normalize=True, stride=2):
+            layers = [nn.Conv2d(in_filters, out_filters, 4, stride=stride, padding=1)]
             if normalize:
                 layers.append(nn.InstanceNorm2d(out_filters))
             layers.append(nn.LeakyReLU(0.2, inplace=True))
             return layers
 
         self.model = nn.Sequential(
-            *block(channels, 64, normalize=False),
-            *block(64, 128),
-            *block(128, 256),
-            *block(256, 512),
-            nn.ZeroPad2d((1, 0, 1, 0)),
-            nn.Conv2d(512, 1, 4, padding=1)
+            # Capas con stride=2
+            *block(channels, 64, normalize=False, stride=2),
+            *block(64, 128, stride=2),
+            *block(128, 256, stride=2),
+            
+            # Capa de 512 canales con stride=1
+            *block(256, 512, stride=1),
+            
+            # Capa de salida con stride=1 y un padding limpio
+            nn.Conv2d(512, 1, 4, stride=1, padding=1)
         )
 
     def forward(self, img):
@@ -429,7 +432,7 @@ for epoch in range(EPOCHS):
         loss_cycle_B = criterion_cycle(recov_B, real_B)
         loss_cycle = loss_cycle_A + loss_cycle_B       
 
-        # Pérdida total del generador
+        # Pérdida total del generador 
         loss_G = (loss_GAN
                   + LAMBDA_CYCLE * loss_cycle
                   + LAMBDA_IDENTITY * loss_identity)

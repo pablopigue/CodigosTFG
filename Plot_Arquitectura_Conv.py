@@ -95,7 +95,7 @@ def draw_volume(ax, x, y_center, w, h, color, label, label_position="center", zo
     fontsize = 6.5 if "\n" in label else 7.0
 
     if label_position == "center":
-        # Label inside the block (only for wide enough blocks)
+        # Label inside the block only for wide enough blocks
         ax.text(
             x + w/2, y_center, label,
             ha="center", va="center",
@@ -150,7 +150,7 @@ def draw_network(ax, layers, title, gap=0.28):
     last_spatial = 32
     last_channels = 3
 
-    # Pre-pass: decide label positions for activation layers to alternate above/below
+    # Decide label positions for activation layers to alternate above/below
     # Track the sequence of activation layers between conv layers
     activation_counter = 0
 
@@ -181,7 +181,7 @@ def draw_network(ax, layers, title, gap=0.28):
             label_position=label_positions[i]
         )
 
-        # Dimension annotation below block (only for explicit spatial layers)
+        # Dimension annotation below block only for explicit spatial layers
         if "spatial" in layer:
             ax.text(
                 x + w/2, CENTER_Y - h/2 - 0.55,
@@ -215,7 +215,6 @@ def save_figure(layers, title, filename, figw=22):
     fig, ax = plt.subplots(figsize=(figw, 5.0), facecolor=BG)
     draw_network(ax, layers, title)
 
-    # suptitle centrado + nota en cursiva
     fig.suptitle(title, fontsize=16, fontweight="bold", color=C_LABEL, y=1.02)
 
     plt.tight_layout()

@@ -4,8 +4,8 @@ Lee los CSVs de cada modelo dentro de un dataset y genera:
   1. Gráfica comparativa de FID (todos los modelos superpuestos, con bandas ±1 std)
   2. Gráfica comparativa de IS (idem)
   3. Gráfica comparativa de Loss del Generador (idem)
-  4. Tabla resumen CSV con FID e IS finales (media ± std) de cada modelo
-  5. Grid comparativo de imágenes generadas (última época, 1 fila por modelo)
+  4. Tabla resumen CSV con FID e IS finales media y std de cada modelo
+  5. Grid comparativo de imágenes generadas
 
 USO:
   python generar_comparativas.py --base_dir /ruta/a/ResultadosCodigosGeneralizacion
@@ -30,7 +30,6 @@ ESTRUCTURA ESPERADA:
 
 COLUMNAS ESPERADAS EN metrics_mean.csv:
   epoch, loss_g, loss_d (o loss_c), fid, is_mean
-  (fid e is_mean pueden tener NaN en épocas sin cálculo de métricas)
 
 COLUMNAS ESPERADAS EN metrics_all_runs.csv:
   epoch, loss_g, loss_d (o loss_c), fid, is_mean, is_std, run
@@ -95,8 +94,7 @@ MODELOS_CONFIG = {
     },
 }
 
-# Mapeo: nombre de carpeta real -> clave en MODELOS_CONFIG
-# Ajusta estos patrones si tus carpetas se llaman diferente
+# nombre de carpeta real -> clave en MODELOS_CONFIG
 CARPETA_A_CLAVE = {
     "tfg_vanilla_gan":  "vanilla",
     "tfg_dcgan":        "dcgan",
@@ -126,7 +124,7 @@ def detectar_carpeta_modelo(dataset_dir, clave_modelo, dataset_suffix):
             ruta = os.path.join(dataset_dir, nombre_carpeta)
             if os.path.isdir(ruta):
                 return ruta
-    # Fallback: buscar por substring
+    # buscar por substring
     for d in os.listdir(dataset_dir):
         full = os.path.join(dataset_dir, d)
         if os.path.isdir(full) and clave_modelo.replace("_", "") in d.replace("_", ""):
@@ -317,7 +315,7 @@ def generar_grid_visual(modelos_imagenes, titulo, filepath, ncols=3,
     canvas = PILImage.new('RGB', (canvas_w, canvas_h), 'white')
     draw = ImageDraw.Draw(canvas)
 
-    # Fuente (usar default si no hay otra disponible)
+    # Fuente
     try:
         font_title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
         font_label = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 20)

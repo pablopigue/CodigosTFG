@@ -106,7 +106,7 @@ def recortar_titulo_imagen(img_array, pct_titulo=0.10):
     """
     Recorta en dos pasos:
       1. Padding blanco de los 4 bordes
-      2. Porcentaje fijo de la parte superior (título de matplotlib)
+      2. Porcentaje fijo de la parte superior
     """
     if img_array.ndim == 3:
         gray = np.mean(img_array[:, :, :3], axis=2)
@@ -175,10 +175,10 @@ def generar_grid(modelos_info, titulo, filepath, ncols=3):
 
     # 2. Tamaño de celda respetando aspect ratio de las imágenes
     #    Usamos el aspect ratio de la primera imagen como referencia
-    ref_w, ref_h = imgs[0].size  # PIL: (width, height)
+    ref_w, ref_h = imgs[0].size
     cell_w = 500
-    cell_h = int(cell_w * ref_h / ref_w)  # proporcional
-    title_h = 70       # más alto porque tiene 2 líneas (nombre + época/FID)
+    cell_h = int(cell_w * ref_h / ref_w) 
+    title_h = 70       
     main_title_h = 70
     gap = 15
 
