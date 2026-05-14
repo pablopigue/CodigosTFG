@@ -226,7 +226,5 @@ experimento/
   arXiv:1704.00028.
 - Zhu, J.-Y. et al. (2017). Unpaired Image-to-Image Translation using
   Cycle-Consistent Adversarial Networks. arXiv:1703.10593.
-- Heusel, M. et al. (2017). GANs Trained by a Two Time-Scale Update Rule
-  Converge to a Local Nash Equilibrium. arXiv:1706.08500.
 - Salimans, T. et al. (2016). Improved Techniques for Training GANs.
   arXiv:1606.03498.
