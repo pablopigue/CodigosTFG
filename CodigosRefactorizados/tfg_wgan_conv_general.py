@@ -11,6 +11,7 @@ from utils import (
     load_dataset,
     build_fixed_eval_set,
     compute_fid_is,
+    weights_init_dcgan,
     save_sample_images,
     save_run_artifacts,
     aggregate_runs,
@@ -25,17 +26,22 @@ plt.switch_backend('agg')
 
 # Opciones válidas: "MNIST", "FashionMNIST", "SVHN"
 DATASET_NAME = "MNIST"
-MODEL_NAME = "Vanilla GAN"
+MODEL_NAME = "WGAN-Conv"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-LR = 0.0002
-BATCH_SIZE = 128
+# Hiperparámetros estándar WGAN. Referencia: Arjovsky et al. (2017), arXiv:1701.07875
+# Arquitectura convolucional basada en DCGAN (Radford et al., 2015) con pérdida Wasserstein.
+LR = 0.00005
+BATCH_SIZE = 64
 Z_DIM = 100
 SAVE_IMG_FREQ = 5
 CALC_METRICS_FREQ = 5
 NUM_RUNS = 10
 NUM_EVAL_IMAGES = 10000
 IMG_SIZE = 32
+
+CRITIC_ITERATIONS = 5
+WEIGHT_CLIP = 0.01
 
 if DATASET_NAME in ["MNIST", "FashionMNIST"]:
     CHANNELS = 1
@@ -46,12 +52,10 @@ elif DATASET_NAME == "SVHN":
 else:
     raise ValueError(f"Dataset '{DATASET_NAME}' no reconocido. Opciones válidas: MNIST, FashionMNIST, SVHN.")
 
-IMG_DIM = CHANNELS * IMG_SIZE * IMG_SIZE
-
-EXPERIMENT_DIR = f"/mnt/homeGPU/pablomarpa/CodigosTFG/tfg_vanillaRF_gan_{DATASET_NAME.lower()}"
+EXPERIMENT_DIR = f"/mnt/homeGPU/pablomarpa/CodigosTFG/tfg_wganRF_conv_{DATASET_NAME.lower()}"
 make_experiment_dirs(EXPERIMENT_DIR)
 
-print(f"Iniciando entrenamiento en: {DEVICE} con dataset {DATASET_NAME}. Ejecuciones totales: {NUM_RUNS}", flush=True)
+print(f"Iniciando entrenamiento WGAN-Conv en: {DEVICE} con dataset {DATASET_NAME}. Ejecuciones totales: {NUM_RUNS}", flush=True)
 
 # ==========================================
 # 2. CARGA DE DATOS
@@ -68,34 +72,51 @@ real_eval_images = build_fixed_eval_set(
 
 # ==========================================
 # 4. DEFINICIÓN DE CLASES
+# Arquitectura convolucional idéntica a DCGAN.
+# Cambios respecto a DCGAN:
+#   - Crítico sin Sigmoid (salida escalar sin acotar)
+#   - Pérdida Wasserstein en lugar de BCE
+#   - Weight clipping para restricción 1-Lipschitz
+#   - RMSprop en lugar de Adam
 # ==========================================
-class Discriminator(nn.Module):
+class Critic(nn.Module):
     def __init__(self):
         super().__init__()
-        self.disc = nn.Sequential(
-            nn.Linear(IMG_DIM, 512),
-            nn.LeakyReLU(0.2),
-            nn.Linear(512, 256),
-            nn.LeakyReLU(0.2),
-            nn.Linear(256, 1),
-            nn.Sigmoid()
+        # 32x32 -> 16x16 -> 8x8 -> 4x4 -> 1x1
+        self.main = nn.Sequential(
+            nn.Conv2d(CHANNELS, 64, 4, 2, 1, bias=False),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(64, 128, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(128),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(128, 256, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(256),
+            nn.LeakyReLU(0.2, inplace=True),
+            # Sin Sigmoid: salida escalar sin acotar (puntuación Wasserstein)
+            nn.Conv2d(256, 1, 4, 1, 0, bias=False)
         )
     def forward(self, x):
-        return self.disc(x)
+        return self.main(x).view(-1)
 
 class Generator(nn.Module):
     def __init__(self):
         super().__init__()
-        self.gen = nn.Sequential(
-            nn.Linear(Z_DIM, 256),
-            nn.ReLU(),
-            nn.Linear(256, 512),
-            nn.ReLU(),
-            nn.Linear(512, IMG_DIM),
+        # 1x1 -> 4x4 -> 8x8 -> 16x16 -> 32x32
+        self.main = nn.Sequential(
+            nn.ConvTranspose2d(Z_DIM, 256, 4, 1, 0, bias=False),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(256, 128, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(128),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(128, 64, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(64),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(64, CHANNELS, 4, 2, 1, bias=False),
             nn.Tanh()
         )
     def forward(self, z):
-        return self.gen(z)
+        return self.main(z.view(-1, Z_DIM, 1, 1))
 
 # ==========================================
 # 5. BUCLE MULTI-RUN
@@ -108,52 +129,60 @@ for run in range(NUM_RUNS):
     print(f"{'='*40}\n", flush=True)
 
     gen = Generator().to(DEVICE)
-    disc = Discriminator().to(DEVICE)
+    critic = Critic().to(DEVICE)
+    gen.apply(weights_init_dcgan)
+    critic.apply(weights_init_dcgan)
 
-    # betas=(0.5, 0.999): estándar para GANs. Referencia: Radford et al. (2015), arXiv:1511.06434
-    opt_gen = optim.Adam(gen.parameters(), lr=LR, betas=(0.5, 0.999))
-    opt_disc = optim.Adam(disc.parameters(), lr=LR, betas=(0.5, 0.999))
-    criterion = nn.BCELoss()
+    # RMSprop sin momentum, tal como especifica el paper original de WGAN.
+    opt_gen = optim.RMSprop(gen.parameters(), lr=LR)
+    opt_critic = optim.RMSprop(critic.parameters(), lr=LR)
 
     fixed_noise = torch.randn(32, Z_DIM).to(DEVICE)
 
-    history = {"epoch": [], "loss_g": [], "loss_d": [], "fid": [], "is_mean": [], "is_std": []}
+    history = {"epoch": [], "loss_g": [], "loss_c": [], "fid": [], "is_mean": [], "is_std": []}
 
     for epoch in range(EPOCHS):
         epoch_loss_g = 0.0
-        epoch_loss_d = 0.0
+        epoch_loss_c = 0.0
 
         gen.train()
-        disc.train()
+        critic.train()
         for batch_idx, data in enumerate(loader):
-            real = data[0].view(-1, IMG_DIM).to(DEVICE)
+            real = data[0].to(DEVICE)
             batch_size_curr = real.shape[0]
 
-            disc_real = disc(real).view(-1)
-            loss_disc_real = criterion(disc_real, torch.ones_like(disc_real))
+            # 1. ENTRENAR CRÍTICO (CRITIC_ITERATIONS veces consecutivas)
+            for _ in range(CRITIC_ITERATIONS):
+                noise = torch.randn(batch_size_curr, Z_DIM).to(DEVICE)
+                fake = gen(noise)
 
+                critic_real = critic(real).view(-1)
+                critic_fake = critic(fake.detach()).view(-1)
+                loss_critic = -(torch.mean(critic_real) - torch.mean(critic_fake))
+
+                critic.zero_grad()
+                loss_critic.backward()
+                opt_critic.step()
+
+                # Weight clipping para restricción 1-Lipschitz
+                for p in critic.parameters():
+                    p.data.clamp_(-WEIGHT_CLIP, WEIGHT_CLIP)
+
+            epoch_loss_c += loss_critic.item()
+
+            # 2. ENTRENAR GENERADOR (1 vez, con ruido nuevo)
             noise = torch.randn(batch_size_curr, Z_DIM).to(DEVICE)
-            fake = gen(noise)
-            disc_fake = disc(fake.detach()).view(-1)
-            loss_disc_fake = criterion(disc_fake, torch.zeros_like(disc_fake))
-
-            loss_disc = (loss_disc_real + loss_disc_fake) / 2
-            disc.zero_grad()
-            loss_disc.backward()
-            opt_disc.step()
-
-            output = disc(fake).view(-1)
-            loss_gen = criterion(output, torch.ones_like(output))
+            fake_for_gen = gen(noise)
+            loss_gen = -torch.mean(critic(fake_for_gen).view(-1))
 
             gen.zero_grad()
             loss_gen.backward()
             opt_gen.step()
 
             epoch_loss_g += loss_gen.item()
-            epoch_loss_d += loss_disc.item()
 
+        avg_loss_c = epoch_loss_c / len(loader)
         avg_loss_g = epoch_loss_g / len(loader)
-        avg_loss_d = epoch_loss_d / len(loader)
 
         current_fid = np.nan
         current_is_mean = np.nan
@@ -163,18 +192,18 @@ for run in range(NUM_RUNS):
             gen.eval()
             current_fid, current_is_mean, current_is_std = compute_fid_is(
                 gen, real_eval_images, Z_DIM, DEVICE, CHANNELS, IMG_SIZE,
-                flatten_output=True
+                flatten_output=False
             )
 
         print(format_epoch_log(
             run + 1, NUM_RUNS, epoch + 1, EPOCHS,
-            losses={'D': avg_loss_d, 'G': avg_loss_g},
+            losses={'C': avg_loss_c, 'G': avg_loss_g},
             metrics={'fid': current_fid, 'is_mean': current_is_mean, 'is_std': current_is_std}
         ), flush=True)
 
         history["epoch"].append(epoch + 1)
         history["loss_g"].append(avg_loss_g)
-        history["loss_d"].append(avg_loss_d)
+        history["loss_c"].append(avg_loss_c)
         history["fid"].append(current_fid)
         history["is_mean"].append(current_is_mean)
         history["is_std"].append(current_is_std)
@@ -183,8 +212,8 @@ for run in range(NUM_RUNS):
             save_sample_images(
                 gen, fixed_noise, CHANNELS, IMG_SIZE,
                 filepath=f"{EXPERIMENT_DIR}/images/epoch_{epoch+1}.png",
-                title=f"Imágenes Generadas ({DATASET_NAME}) - Época {epoch+1}",
-                flatten_output=True
+                title=f"Imágenes Generadas WGAN-Conv ({DATASET_NAME}) - Época {epoch+1}",
+                flatten_output=False
             )
 
     df_run = pd.DataFrame(history)
@@ -193,9 +222,9 @@ for run in range(NUM_RUNS):
 
     if run == 0:
         save_run_artifacts(
-            gen, disc, df_run, EXPERIMENT_DIR,
+            gen, critic, df_run, EXPERIMENT_DIR,
             model_name=MODEL_NAME, dataset_name=DATASET_NAME,
-            critic_name='discriminator'
+            critic_name='critic'
         )
 
 # ==========================================
@@ -204,4 +233,4 @@ for run in range(NUM_RUNS):
 print("\nGenerando gráficas promediadas...", flush=True)
 aggregate_runs(all_runs_data, EXPERIMENT_DIR, MODEL_NAME, DATASET_NAME)
 
-print(f"Entrenamiento de {NUM_RUNS} ejecuciones finalizado. Todo guardado en: {EXPERIMENT_DIR}", flush=True)
+print(f"Entrenamiento WGAN-Conv de {NUM_RUNS} ejecuciones finalizado. Todo guardado en: {EXPERIMENT_DIR}", flush=True)
