@@ -167,8 +167,8 @@ Cada entrenamiento genera un `metrics_all_runs.csv` con las columnas:
 | `is_mean`   | Inception Score, media                                      |
 | `is_std`    | Inception Score, desviación estándar                        |
 
-Para CycleGAN también se guardan `loss_GAN`, `loss_cycle`,
-`loss_identity`, `loss_D_A`, `loss_D_B`, `fid_AB`, `fid_BA` y `lr`.
+Para CycleGAN no se guarda is pues no se calcula y se guardan también:
+`loss_GAN`, `loss_cycle`, `loss_identity`, `loss_D_A`, `loss_D_B`, `fid_AB`, `fid_BA` y `lr`
 
 
 ## Requisitos
