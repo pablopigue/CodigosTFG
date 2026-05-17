@@ -633,7 +633,7 @@ df['loss_D_total'] = df['loss_D_A'] + df['loss_D_B']
 save_plot(
     x=df['epoch'],
     ys=[df['loss_G'], df['loss_D_total']],
-    labels=['Pérdida del Generador (suma)', 'Pérdida de los Discriminadores'],
+    labels=['Pérdida de los Generadores', 'Pérdida de los Discriminadores'],
     colors=['blue', 'orange'],
     title='Curvas de Aprendizaje CycleGAN - apple2orange',
     xlabel='Épocas', ylabel='Pérdida',
