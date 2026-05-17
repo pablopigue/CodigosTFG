@@ -71,10 +71,9 @@ def is_activation_layer(layer):
     return "spatial" not in layer and "channels" not in layer
 
 
-def draw_volume(ax, x, y_center, w, h, color, label, label_position="center", zorder=3):
+def draw_volume(ax, x, y_center, w, h, color, label, label_position, zorder=3):
     """
-    Draws a 3D block (feature map).
-    label_position: "center", "above", "below"
+    Draws a 3D block (feature map) with labels in fixed baselines.
     """
     iso_dx = w * 0.45
     iso_dy = w * 0.30
@@ -102,78 +101,62 @@ def draw_volume(ax, x, y_center, w, h, color, label, label_position="center", zo
 
     # Label rendering
     fontsize = 6.5 if "\n" in label else 7.0
+    text_x = x + w/2 + iso_dx/2
 
-    if label_position == "center":
-        # Label inside the block (only for wide enough blocks)
+    if label_position == "main":
+        # Carril inferior para las capas físicas (Conv, Input)
+        label_y = -0.1
         ax.text(
-            x + w/2, y_center, label,
-            ha="center", va="center",
-            fontsize=fontsize, color="white", fontweight="bold",
-            linespacing=1.35, zorder=zorder+2,
-            path_effects=[pe.withStroke(linewidth=1.2, foreground="black")]
-        )
-    elif label_position == "above":
-        # Label above the block on a connector line
-        label_y = y + h + iso_dy + 0.35
-        ax.text(
-            x + w/2 + iso_dx/2, label_y, label,
-            ha="center", va="bottom",
-            fontsize=6.5, color=color, fontweight="bold",
-            linespacing=1.3, zorder=zorder+2,
-            bbox=dict(boxstyle="round,pad=0.18", fc=BG, ec=color, lw=0.8, alpha=0.92)
-        )
-        # Connector line from top of block to label box
-        ax.plot(
-            [x + w/2 + iso_dx/2, x + w/2 + iso_dx/2],
-            [y + h + iso_dy + 0.04, label_y - 0.02],
-            color=color, lw=0.8, ls="--", alpha=0.7, zorder=zorder+1
-        )
-    elif label_position == "below":
-        # Label below the block
-        label_y = y - 0.35
-        ax.text(
-            x + w/2, label_y, label,
+            text_x, label_y, label,
             ha="center", va="top",
+            fontsize=fontsize, color=color, fontweight="bold",
+            linespacing=1.35, zorder=zorder+2
+        )
+        # Línea punteada que ancla el bloque a su texto
+        ax.plot(
+            [text_x, text_x],
+            [y - 0.05, label_y + 0.1],
+            color=color, lw=1.2, ls=":", alpha=0.5, zorder=zorder+1
+        )
+        
+    elif label_position == "activation":
+        # Carril superior para activaciones y normalizaciones
+        label_y = 5.5
+        ax.text(
+            text_x, label_y, label,
+            ha="center", va="center",
             fontsize=6.5, color=color, fontweight="bold",
             linespacing=1.3, zorder=zorder+2,
-            bbox=dict(boxstyle="round,pad=0.18", fc=BG, ec=color, lw=0.8, alpha=0.92)
+            bbox=dict(boxstyle="round,pad=0.25", fc=BG, ec=color, lw=1.0, alpha=0.95)
         )
-        # Connector line from bottom of block to label box
+        # Línea punteada que ancla el bloque a su texto
         ax.plot(
-            [x + w/2, x + w/2],
-            [y - 0.04, label_y + 0.08],
-            color=color, lw=0.8, ls="--", alpha=0.7, zorder=zorder+1
+            [text_x, text_x],
+            [y + h + iso_dy + 0.05, label_y - 0.25],
+            color=color, lw=1.2, ls=":", alpha=0.5, zorder=zorder+1
         )
 
     return x + w + iso_dx  # right edge including perspective
 
 
-def draw_network(ax, layers, title, gap=0.28):
+def draw_network(ax, layers, title, gap=0.48):
     ax.set_facecolor(BG)
     ax.set_aspect("equal")
     ax.axis("off")
 
-    CENTER_Y = 2.8
+    CENTER_Y = 2.6
     x = 0.3
 
-    last_spatial = 64   # CelebA input resolution
+    last_spatial = 64
     last_channels = 3
 
-    # Pre-pass: decide label positions for activation layers to alternate above/below
-    # Track the sequence of activation layers between conv layers
-    activation_counter = 0
-
+    # Asignamos estrictamente "main" (abajo) o "activation" (arriba)
     label_positions = []
-    act_idx = 0  # alternating counter for activations between conv blocks
-
-    for i, layer in enumerate(layers):
+    for layer in layers:
         if is_activation_layer(layer):
-            # Alternate: even -> above, odd -> below
-            label_positions.append("above" if act_idx % 2 == 0 else "below")
-            act_idx += 1
+            label_positions.append("activation")
         else:
-            label_positions.append("center")
-            act_idx = 0  # reset after each conv layer
+            label_positions.append("main")
 
     for i, layer in enumerate(layers):
         current_spatial = layer.get("spatial", last_spatial)
@@ -190,15 +173,6 @@ def draw_network(ax, layers, title, gap=0.28):
             label_position=label_positions[i]
         )
 
-        # Dimension annotation below block (only for explicit spatial layers)
-        if "spatial" in layer:
-            ax.text(
-                x + w/2, CENTER_Y - h/2 - 0.55,
-                f"{layer['spatial']}×{layer['spatial']}\n×{layer['channels']}",
-                ha="center", va="top", fontsize=5.5, color=C_LABEL,
-                linespacing=1.3
-            )
-
         # Arrow to next block
         if i < len(layers) - 1:
             arr_x0 = right_edge + 0.04
@@ -214,18 +188,13 @@ def draw_network(ax, layers, title, gap=0.28):
             x = right_edge
 
     ax.set_xlim(-0.1, x + 0.3)
-    ax.set_ylim(-0.5, 6.2)
-
-    # título se pone en fig.suptitle para coincidir con formato MLP
-    pass
-
+    ax.set_ylim(-1.0, 6.2)
 
 
 def save_figure(layers, title, filename, figw=22):
     fig, ax = plt.subplots(figsize=(figw, 5.0), facecolor=BG)
     draw_network(ax, layers, title)
 
-    fig.suptitle(title, fontsize=16, fontweight="bold", color=C_LABEL, y=1.02)
     plt.tight_layout()
     plt.savefig(filename, dpi=160, bbox_inches="tight", facecolor=BG)
     plt.close()

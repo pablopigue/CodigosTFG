@@ -72,7 +72,7 @@ MODELOS_CONFIG = {
         "loss_type": "BCE",
     },
     "wgan": {
-        "nombre": "WGAN",
+        "nombre": "WGAN-MLP",
         "color": "#2ca02c",       # verde
         "linestyle": "--",
         "arq": "MLP",

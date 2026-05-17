@@ -55,8 +55,12 @@ def is_activation_layer(layer):
     return "spatial" not in layer and "channels" not in layer
 
 
-def draw_volume(ax, x, y_center, w, h, color, label, label_position="center",
-                zorder=3, label_color="white", narrow=False):
+def draw_volume(ax, x, y_center, w, h, color, label, label_position="main",
+                zorder=3, narrow=False):
+    """
+    Dibuja un bloque 3D y su etiqueta alineada en carriles.
+    Soporta carriles de activación escalonados (activation_1, activation_2).
+    """
     if narrow:
         iso_dx = w * 0.30
         iso_dy = w * 0.20
@@ -65,6 +69,7 @@ def draw_volume(ax, x, y_center, w, h, color, label, label_position="center",
         iso_dy = w * 0.30
     y = y_center - h / 2
 
+    # Front face
     front = mpatches.FancyBboxPatch(
         (x, y), w, h,
         boxstyle="round,pad=0.03",
@@ -72,55 +77,56 @@ def draw_volume(ax, x, y_center, w, h, color, label, label_position="center",
     )
     ax.add_patch(front)
 
+    # Top face
     tx = [x, x + w, x + w + iso_dx, x + iso_dx, x]
     ty = [y + h, y + h, y + h + iso_dy, y + h + iso_dy, y + h]
     ax.fill(tx, ty, color=color, alpha=0.45, zorder=zorder - 1)
     ax.plot(tx, ty, color="white", lw=0.7, zorder=zorder + 1)
 
+    # Right face
     sx = [x + w, x + w + iso_dx, x + w + iso_dx, x + w, x + w]
     sy = [y, y + iso_dy, y + h + iso_dy, y + h, y]
     ax.fill(sx, sy, color=color, alpha=0.25, zorder=zorder - 1)
     ax.plot(sx, sy, color="white", lw=0.7, zorder=zorder + 1)
 
+    # Label rendering (Carriles fijos)
     fontsize = 6.0 if "\n" in label else 6.8
+    text_x = x + w / 2 + iso_dx / 2
 
-    if label_position == "center":
+    if label_position == "main":
+        # Carril inferior para las capas físicas (Conv, Input, etc)
+        label_y = -0.1
         ax.text(
-            x + w / 2, y_center, label,
-            ha="center", va="center",
-            fontsize=fontsize, color=label_color, fontweight="bold",
-            linespacing=1.35, zorder=zorder + 2,
-            path_effects=[pe.withStroke(linewidth=1.0, foreground="black")]
-        )
-    elif label_position == "above":
-        label_y = y + h + iso_dy + 0.40
-        ax.text(
-            x + w / 2 + iso_dx / 2, label_y, label,
-            ha="center", va="bottom",
-            fontsize=6.2, color=color, fontweight="bold",
-            linespacing=1.3, zorder=zorder + 2,
-            bbox=dict(boxstyle="round,pad=0.18", fc=BG, ec=color, lw=0.8,
-                      alpha=0.95)
-        )
-        ax.plot(
-            [x + w / 2 + iso_dx / 2, x + w / 2 + iso_dx / 2],
-            [y + h + iso_dy + 0.04, label_y - 0.02],
-            color=color, lw=0.8, ls="--", alpha=0.7, zorder=zorder + 1
-        )
-    elif label_position == "below":
-        label_y = y - 0.85
-        ax.text(
-            x + w / 2, label_y, label,
+            text_x, label_y, label,
             ha="center", va="top",
-            fontsize=6.2, color=color, fontweight="bold",
-            linespacing=1.3, zorder=zorder + 2,
-            bbox=dict(boxstyle="round,pad=0.18", fc=BG, ec=color, lw=0.8,
-                      alpha=0.95)
+            fontsize=fontsize, color=color, fontweight="bold",
+            linespacing=1.35, zorder=zorder + 2
         )
         ax.plot(
-            [x + w / 2, x + w / 2],
-            [y - 0.04, label_y + 0.08],
-            color=color, lw=0.8, ls="--", alpha=0.7, zorder=zorder + 1
+            [text_x, text_x],
+            [y - 0.05, label_y + 0.1],
+            color=color, lw=1.2, ls=":", alpha=0.5, zorder=zorder + 1
+        )
+    elif label_position.startswith("activation"):
+        # Carril superior escalonado para evitar que InstNorm y ReLU choquen
+        level = 1
+        if "_" in label_position:
+            level = int(label_position.split("_")[1])
+            
+        # Nivel 1 se queda en 5.9, Nivel 2 sube a 6.8
+        label_y = 5.0 + (level * 0.9) 
+        
+        ax.text(
+            text_x, label_y, label,
+            ha="center", va="center",
+            fontsize=6.2, color=color, fontweight="bold",
+            linespacing=1.3, zorder=zorder + 2,
+            bbox=dict(boxstyle="round,pad=0.25", fc=BG, ec=color, lw=1.0, alpha=0.95)
+        )
+        ax.plot(
+            [text_x, text_x],
+            [y + h + iso_dy + 0.05, label_y - 0.25],
+            color=color, lw=1.2, ls=":", alpha=0.5, zorder=zorder + 1
         )
 
     return x + w + iso_dx
@@ -183,7 +189,6 @@ decoder_layers = [
 
 
 def draw_residual_block_expanded(ax, x_start, y_center, color=C_RESBLOCK):
-    """Bloque residual expandido con skip connection."""
     box_w = 0.40
     box_h = 0.62
     gap = 0.20
@@ -199,7 +204,6 @@ def draw_residual_block_expanded(ax, x_start, y_center, color=C_RESBLOCK):
     ]
 
     x = x_start
-    # Usamos enumerate para tener el índice 'i'
     for i, (label, col) in enumerate(components):
         rect = FancyBboxPatch(
             (x, y_center - box_h / 2), box_w, box_h,
@@ -214,15 +218,13 @@ def draw_residual_block_expanded(ax, x_start, y_center, color=C_RESBLOCK):
             path_effects=[pe.withStroke(linewidth=0.8, foreground="black")]
         )
         
-        # Comprobamos por índice, no por nombre de etiqueta
         if i < len(components) - 1:
             draw_arrow(ax, x + box_w + 0.02, x + box_w + gap - 0.02,
                        y_center, color=C_ARROW, lw=0.9)
         x += box_w + gap
 
-    # Sumador: caja del mismo tamaño que los componentes, con fondo blanco
-    # y "+" en color del bloque, alineado en línea con el resto.
-    sum_x = x  # x ya está después del último gap
+    # Sumador
+    sum_x = x  
     sum_box = FancyBboxPatch(
         (sum_x, y_center - box_h / 2), box_w, box_h,
         boxstyle="round,pad=0.04",
@@ -234,11 +236,10 @@ def draw_residual_block_expanded(ax, x_start, y_center, color=C_RESBLOCK):
         ha="center", va="center", fontsize=20, color=color,
         fontweight="bold", zorder=5
     )
-    # Flecha desde la última InstanceNorm al sumador
     draw_arrow(ax, sum_x - gap + 0.02, sum_x - 0.02, y_center,
                color=C_ARROW, lw=0.9)
 
-    # Skip connection: arco morado desde "in" hasta el sumador
+    # Skip connection
     skip_y_top = y_center + box_h / 2 + 0.55
     ax.plot(
         [x_start - 0.10, x_start - 0.10],
@@ -262,7 +263,6 @@ def draw_residual_block_expanded(ax, x_start, y_center, color=C_RESBLOCK):
         fontweight="bold", style="italic"
     )
 
-    # Etiquetas in/out
     ax.text(
         x_start - 0.10, y_center - box_h / 2 - 0.22, "in",
         ha="center", va="top", fontsize=7, color=C_LABEL, style="italic"
@@ -279,9 +279,6 @@ def draw_residual_block_expanded(ax, x_start, y_center, color=C_RESBLOCK):
 
 
 def draw_subnetwork(layers, title, filename, figw=14):
-    """Dibuja un tramo del generador (encoder, bottleneck o decoder) o
-    cualquier red secuencial de bloques. Reutilizada para las tres partes.
-    """
     fig, ax_main = plt.subplots(figsize=(figw, 5.5), facecolor=BG)
 
     ax_main.set_facecolor(BG)
@@ -293,15 +290,16 @@ def draw_subnetwork(layers, title, filename, figw=14):
     last_spatial = layers[0].get("spatial", 256)
     last_channels = layers[0].get("channels", 3)
 
+    # Asignación escalonada
     label_positions = []
-    act_idx = 0
+    act_level = 1
     for layer in layers:
         if is_activation_layer(layer):
-            label_positions.append("above" if act_idx % 2 == 0 else "below")
-            act_idx += 1
+            label_positions.append(f"activation_{act_level}")
+            act_level = 2 if act_level == 1 else 1 # Alterna nivel
         else:
-            label_positions.append("center")
-            act_idx = 0
+            label_positions.append("main")
+            act_level = 1 # Tras una capa principal, reinicia el nivel superior
 
     for i, layer in enumerate(layers):
         is_act = is_activation_layer(layer)
@@ -327,21 +325,13 @@ def draw_subnetwork(layers, title, filename, figw=14):
             narrow=narrow
         )
 
-        if "spatial" in layer:
-            ax_main.text(
-                x + w / 2, CENTER_Y - h / 2 - 0.30,
-                f"{layer['spatial']}×{layer['spatial']}×{layer['channels']}",
-                ha="center", va="top", fontsize=5.2, color=C_LABEL,
-                linespacing=1.2
-            )
-
         if i < len(layers) - 1:
             next_layer = layers[i + 1]
             next_is_act = is_activation_layer(next_layer)
             if (is_act and next_is_act) or (not is_act and next_is_act):
-                gap = 0.20
+                gap = 0.28
             else:
-                gap = 0.45
+                gap = 0.55
 
             arr_x0 = right_edge + 0.05
             arr_x1 = right_edge + gap - 0.05
@@ -351,7 +341,7 @@ def draw_subnetwork(layers, title, filename, figw=14):
             x = right_edge
 
     ax_main.set_xlim(-0.1, x + 0.3)
-    ax_main.set_ylim(-1.5, 5.5)
+    ax_main.set_ylim(-1.5, 7.8) # Ampliado para el carril doble
 
     fig.suptitle(
         title,
@@ -365,7 +355,6 @@ def draw_subnetwork(layers, title, filename, figw=14):
 
 
 def draw_residual_block_detail(filename, figw=14):
-    """Figura independiente con el detalle interno del ResidualBlock."""
     fig, ax = plt.subplots(figsize=(figw, 4.0), facecolor=BG)
     ax.set_facecolor(BG)
     ax.set_aspect("equal")
@@ -425,15 +414,16 @@ def draw_simple_network(layers, title, filename, figw=22, subtitle=None):
     last_spatial = 256
     last_channels = 3
 
+    # Asignación escalonada
     label_positions = []
-    act_idx = 0
+    act_level = 1
     for layer in layers:
         if is_activation_layer(layer):
-            label_positions.append("above" if act_idx % 2 == 0 else "below")
-            act_idx += 1
+            label_positions.append(f"activation_{act_level}")
+            act_level = 2 if act_level == 1 else 1 # Alterna nivel
         else:
-            label_positions.append("center")
-            act_idx = 0
+            label_positions.append("main")
+            act_level = 1 # Tras una capa principal, reinicia el nivel superior
 
     for i, layer in enumerate(layers):
         is_act = is_activation_layer(layer)
@@ -457,21 +447,13 @@ def draw_simple_network(layers, title, filename, figw=22, subtitle=None):
             narrow=narrow
         )
 
-        if "spatial" in layer:
-            ax.text(
-                x + w / 2, CENTER_Y - h / 2 - 0.30,
-                f"{layer['spatial']}×{layer['spatial']}×{layer['channels']}",
-                ha="center", va="top", fontsize=5.2, color=C_LABEL,
-                linespacing=1.2
-            )
-
         if i < len(layers) - 1:
             next_layer = layers[i + 1]
             next_is_act = is_activation_layer(next_layer)
             if (is_act and next_is_act) or (not is_act and next_is_act):
-                gap = 0.20
+                gap = 0.28
             else:
-                gap = 0.45
+                gap = 0.55
 
             arr_x0 = right_edge + 0.05
             arr_x1 = right_edge + gap - 0.05
@@ -481,13 +463,13 @@ def draw_simple_network(layers, title, filename, figw=22, subtitle=None):
             x = right_edge
 
     ax.set_xlim(-0.1, x + 0.3)
-    ax.set_ylim(-1.5, 5.7)
+    ax.set_ylim(-1.5, 8.0) # Ampliado para el carril doble
 
     fig.suptitle(title, fontsize=16, fontweight="bold",
                  color=C_LABEL, y=1.02)
     if subtitle:
         ax.text(
-            (x + 0.3) / 2, 5.3, subtitle,
+            (x + 0.3) / 2, 7.6, subtitle, # Subtítulo subido también
             ha="center", va="center", fontsize=10, color=C_LABEL,
             style="italic"
         )
@@ -702,11 +684,6 @@ def draw_cycle_diagram(filename):
 
 
 def draw_generator_overview(filename, figw=12):
-    """Diagrama de alto nivel del generador: tres bloques compactos
-    Encoder → Bottleneck → Decoder con sus dimensiones en el flujo de datos.
-    Pensado para incrustar como leyenda visual en los captions de las
-    figuras detalladas.
-    """
     fig, ax = plt.subplots(figsize=(figw, 2.4), facecolor=BG)
     ax.set_facecolor(BG)
     ax.set_aspect("equal")
@@ -721,7 +698,6 @@ def draw_generator_overview(filename, figw=12):
              color=C_CONVT),
     ]
 
-    # Dimensiones que fluyen entre bloques
     flow_dims = ["256×256×3", "64×64×256", "64×64×256", "256×256×3"]
 
     box_w = 2.6
@@ -729,7 +705,6 @@ def draw_generator_overview(filename, figw=12):
     gap = 1.40
     y_center = 1.5
 
-    # Comenzamos con un margen para la dimensión de entrada
     pre_margin = 1.30
     x = pre_margin
 
@@ -764,10 +739,8 @@ def draw_generator_overview(filename, figw=12):
             )
         x += box_w + gap
 
-    x_end = x - gap + box_w  # right edge of last box
+    x_end = x - gap + box_w  
 
-    # Posiciones de las 4 dimensiones de flujo:
-    # entrada/salida pegadas a los bloques, intermedias sobre las flechas
     flow_x = [
         pre_margin - 0.65,                                 
         block_centers[0] + box_w / 2 + gap / 2,            
@@ -775,14 +748,12 @@ def draw_generator_overview(filename, figw=12):
         x_end + 0.65,                                      
     ]
 
-    # Flecha inicial muy corta, desde el borde de la dimensión hasta el bloque
     ax.annotate(
         "", xy=(pre_margin - 0.05, y_center),
         xytext=(flow_x[0] + 0.30, y_center),
         arrowprops=dict(arrowstyle="->", color=C_ARROW, lw=2.0),
         zorder=2
     )
-    # Flecha final muy corta
     ax.annotate(
         "", xy=(flow_x[3] - 0.30, y_center),
         xytext=(x_end + 0.05, y_center),
@@ -791,7 +762,6 @@ def draw_generator_overview(filename, figw=12):
     )
 
     for i, (fx, dim) in enumerate(zip(flow_x, flow_dims)):
-        # Etiquetas de los extremos al mismo nivel central; intermedias arriba de la flecha
         if i == 0 or i == 3:
             y_label = y_center
             va = "center"

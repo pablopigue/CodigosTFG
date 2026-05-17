@@ -55,8 +55,7 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
     ax.axis("off")
 
     iso_dx = 0.18
-    iso_dy = 0.12
-    depth  = 0.22        
+    iso_dy = 0.12       
 
     xs = []
     x = start_x
@@ -92,22 +91,42 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
         ax.fill(side_x, side_y, color=c, alpha=0.30, zorder=2)
         ax.plot(side_x, side_y, color="white", lw=0.8, zorder=4)
 
-        # etiqueta dentro del bloque
-        ax.text(
-            x + block_w / 2, y + h / 2, layer["label"],
-            ha="center", va="center", fontsize=7.5, color=C_TEXT,
-            fontweight="bold", zorder=5, linespacing=1.4,
-            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")]
-        )
+        # ----------------------------------------------------------------------
+        # NUEVO SISTEMA DE ETIQUETAS Y CARRILES
+        # ----------------------------------------------------------------------
+        fontsize = 7.5 if "\n" in layer["label"] else 8.0
+        text_x = x + block_w / 2 + iso_dx / 2
 
-        # número de unidades
-        # 2. Solo imprimir el texto si la capa tiene explícitamente "units" o "units_label"
-        if "units" in layer or "units_label" in layer:
-            units_label = layer.get("units_label", f"{layer.get('units')} u.")
+        if layer["type"] in ["input", "linear"]:
+            # Carril inferior para Input y Linear
+            label_y = -0.2
             ax.text(
-                x + block_w / 2, y - 0.22,
-                units_label,
-                ha="center", va="top", fontsize=6.5, color=C_LABEL, zorder=5
+                text_x, label_y, layer["label"],
+                ha="center", va="top",
+                fontsize=fontsize, color=c, fontweight="bold",
+                linespacing=1.35, zorder=5
+            )
+            # Línea punteada conector inferior
+            ax.plot(
+                [text_x, text_x],
+                [y - 0.05, label_y + 0.1],
+                color=c, lw=1.2, ls=":", alpha=0.5, zorder=4
+            )
+        elif layer["type"] == "act":
+            # Carril superior para activaciones
+            label_y = 5.3
+            ax.text(
+                text_x, label_y, layer["label"],
+                ha="center", va="center",
+                fontsize=7.5, color=c, fontweight="bold",
+                linespacing=1.3, zorder=5,
+                bbox=dict(boxstyle="round,pad=0.25", fc=BG, ec=c, lw=1.0, alpha=0.95)
+            )
+            # Línea punteada conector superior
+            ax.plot(
+                [text_x, text_x],
+                [y + h + iso_dy + 0.05, label_y - 0.25],
+                color=c, lw=1.2, ls=":", alpha=0.5, zorder=4
             )
 
         xs.append((x, block_w, y, h))
@@ -128,9 +147,9 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
 
         x += block_w + gap
 
-    # título
+    # Ajuste de límites para que quepan los carriles superior e inferior
     ax.set_xlim(-0.2, x + 0.2)
-    ax.set_ylim(-0.6, 5.8)
+    ax.set_ylim(-1.2, 6.0)
     ax.set_title(title, fontsize=13, fontweight="bold",
                  color=C_LABEL, pad=10, loc="left")
 
@@ -138,13 +157,10 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
 NOTE = f"IMG_DIM = CHANNELS × IMG_SIZE × IMG_SIZE"
 
 # Generador
-fig, ax_net = plt.subplots(1, 1, figsize=(16, 4.5), facecolor=BG)
+fig, ax_net = plt.subplots(1, 1, figsize=(16, 5.0), facecolor=BG) # Ligeramente más alto (5.0) para los textos
 
-fig.suptitle("Generador-MLP", fontsize=16,
-             fontweight="bold", color=C_LABEL, y=1.02)
-
-fig.text(0.5, 0.94, NOTE, ha="center", va="top",
-         fontsize=8, color="#666666", style="italic")
+fig.text(0.5, 0.90, NOTE, ha="center", va="top",
+         fontsize=9, color="#666666", style="italic")
 
 draw_network(ax_net, generator_layers, "")
 plt.savefig("mlp_generator.png", dpi=160, bbox_inches="tight", facecolor=BG)
@@ -152,13 +168,10 @@ plt.close()
 print("Guardado: mlp_generator.png")
 
 # Discriminador
-fig, ax_net = plt.subplots(1, 1, figsize=(16, 4.5), facecolor=BG)
+fig, ax_net = plt.subplots(1, 1, figsize=(16, 5.0), facecolor=BG)
 
-fig.suptitle("Discriminador-MLP", fontsize=16,
-             fontweight="bold", color=C_LABEL, y=1.02)
-
-fig.text(0.5, 0.94, NOTE, ha="center", va="top",
-         fontsize=8, color="#666666", style="italic")
+fig.text(0.5, 0.90, NOTE, ha="center", va="top",
+         fontsize=9, color="#666666", style="italic")
 
 draw_network(ax_net, discriminator_layers, "")
 plt.savefig("mlp_discriminator.png", dpi=160, bbox_inches="tight", facecolor=BG)

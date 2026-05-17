@@ -47,7 +47,7 @@ BCE_MODELOS = {
 # Modelos Wasserstein: comparten la misma función de pérdida
 WASS_MODELOS = {
     "wgan": {
-        "nombre": "WGAN",
+        "nombre": "WGAN-MLP",
         "color": "#2ca02c",
         "linestyle": "--",
     },

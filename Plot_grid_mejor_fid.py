@@ -24,7 +24,7 @@ MODELOS_CONFIG = {
     "vanilla":   {"nombre": "Vanilla GAN", "arq": "MLP"},
     "dcgan":     {"nombre": "DCGAN",       "arq": "CNN"},
     "dcgan_ls":  {"nombre": "DCGAN+LS",    "arq": "CNN"},
-    "wgan":      {"nombre": "WGAN",        "arq": "MLP"},
+    "wgan":      {"nombre": "WGAN-MLP",    "arq": "MLP"},
     "wgan_conv": {"nombre": "WGAN-Conv",   "arq": "CNN"},
     "wgangp":    {"nombre": "WGAN-GP",     "arq": "CNN"},
 }

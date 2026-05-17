@@ -35,6 +35,7 @@ CodigosTFG/
 ├── Plot_dataset_samples.py           Cuadrículas de muestra de cada dataset.
 ├── Plot_grid_mejor_fid.py            Cuadrículas en el checkpoint de mejor FID.
 ├── Plot_losses_con_zoom_mnist.py     Curvas de pérdida con zoom para ver inestabilidades en MNIST.
+├── regenerar_plots_wgan_mlp.py       Regeneración de gráficas de wasserstein debido a renombrado de WGAN a WGAN-MLP.
 │
 └── README.md
 ```
@@ -214,6 +215,10 @@ experimento/
 └── plots/     Curvas de pérdida, FID e IS (individuales y promediadas).
 ```
 
+## Apunte sobre códigos de plot
+Las imágenes introducidas en el TFG son tomadas de esos scripts, pero,
+algunas fueron editadas después manualmente pues resultaba más rápido cambiar,
+pequeños detalles manualmente que a código.
 
 ## Referencias
 
