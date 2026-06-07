@@ -23,15 +23,12 @@ CodigosTFG/
 ├── CodigosConQueSeEntrenoCELEBA/     Scripts originales con los que se entrenó CelebA.
 ├── CodigosRefactorizados/            Versión modularizada de los anteriores (ver más abajo).
 ├── ResultadosCodigosGeneralizacion/  CSVs y resultados generados por los entrenamientos.
+├── PlotsArquitecturas/               Códigos usados para crear imágenes de las arquitecturas
 │
 ├── comparar_losses.py                Compara curvas de pérdida G y D/C entre modelos.
 ├── estadisticas_tabla.py             Tablas con FID/IS finales por modelo y dataset.
 ├── generar_comparativas_general.py   Comparativas globales FID/IS entre todos los modelos.
 │
-├── Plot_Arquitectura_MLP.py          Diagrama de la arquitectura MLP (Vanilla GAN, WGAN).
-├── Plot_Arquitectura_Conv.py         Diagrama de la arquitectura convolucional 32x32.
-├── Plot_Arquitectura_Conv_Celeba.py  Diagrama de la arquitectura convolucional 64x64.
-├── Plot_CycleGAN.py                  Diagramas del generador ResNet y del discriminador PatchGAN.
 ├── Plot_dataset_samples.py           Cuadrículas de muestra de cada dataset.
 ├── Plot_grid_mejor_fid.py            Cuadrículas en el checkpoint de mejor FID.
 ├── Plot_losses_con_zoom_mnist.py     Curvas de pérdida con zoom para ver inestabilidades en MNIST.

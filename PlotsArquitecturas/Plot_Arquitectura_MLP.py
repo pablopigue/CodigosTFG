@@ -63,7 +63,7 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
     last_units = 100 # Valor inicial por defecto
     
     for i, layer in enumerate(layers):
-        # 1. Heredar unidades si no están definidas
+        # Heredar unidades si no están definidas
         current_units = layer.get("units", last_units)
         last_units = current_units # Actualizar para la siguiente capa
         
@@ -91,9 +91,7 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
         ax.fill(side_x, side_y, color=c, alpha=0.30, zorder=2)
         ax.plot(side_x, side_y, color="white", lw=0.8, zorder=4)
 
-        # ----------------------------------------------------------------------
-        # NUEVO SISTEMA DE ETIQUETAS Y CARRILES
-        # ----------------------------------------------------------------------
+        # Sistema de etiquetas
         fontsize = 7.5 if "\n" in layer["label"] else 8.0
         text_x = x + block_w / 2 + iso_dx / 2
 
@@ -133,7 +131,7 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
 
         # flecha de conexión
         if i < len(layers) - 1:
-            # Empezamos la flecha después del efecto 3D lateral (iso_dx)
+            # Empezamos la flecha después del efecto 3D lateral
             start_arrow = x + block_w + iso_dx + 0.05
             # Terminamos la flecha un poco antes de la siguiente caja
             end_arrow = x + block_w + gap - 0.2
@@ -142,7 +140,7 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
                 "", xy=(end_arrow, 2.5),
                 xytext=(start_arrow, 2.5),
                 arrowprops=dict(arrowstyle="->", color=C_ARROW, lw=1.5),
-                zorder=4  # Menor que zorder=5 (texto) para que pase por detrás
+                zorder=4
             )
 
         x += block_w + gap
@@ -157,7 +155,7 @@ def draw_network(ax, layers, title, start_x=0.4, block_w=1.0, gap=0.85):
 NOTE = f"IMG_DIM = CHANNELS × IMG_SIZE × IMG_SIZE"
 
 # Generador
-fig, ax_net = plt.subplots(1, 1, figsize=(16, 5.0), facecolor=BG) # Ligeramente más alto (5.0) para los textos
+fig, ax_net = plt.subplots(1, 1, figsize=(16, 5.0), facecolor=BG)
 
 fig.text(0.5, 0.90, NOTE, ha="center", va="top",
          fontsize=9, color="#666666", style="italic")

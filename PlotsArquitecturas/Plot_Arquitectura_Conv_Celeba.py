@@ -136,7 +136,7 @@ def draw_volume(ax, x, y_center, w, h, color, label, label_position, zorder=3):
             color=color, lw=1.2, ls=":", alpha=0.5, zorder=zorder+1
         )
 
-    return x + w + iso_dx  # right edge including perspective
+    return x + w + iso_dx
 
 
 def draw_network(ax, layers, title, gap=0.48):
