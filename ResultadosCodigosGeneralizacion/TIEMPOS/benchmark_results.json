@@ -1,0 +1,482 @@
+[
+  {
+    "model": "Vanilla GAN",
+    "dataset": "MNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 468,
+    "measured_epochs": 5,
+    "epoch_times": [
+      12.263849893934093,
+      12.205758930998854,
+      12.207006226992235,
+      12.181531347916462,
+      12.184163999045268
+    ],
+    "mean_time_per_epoch": 12.208462079777382,
+    "std_time_per_epoch": 0.03313946862707073,
+    "ms_per_batch": 26.086457435421753
+  },
+  {
+    "model": "DCGAN",
+    "dataset": "MNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 468,
+    "measured_epochs": 5,
+    "epoch_times": [
+      14.297433281084523,
+      14.306539127021097,
+      14.322025579051115,
+      14.320371867972426,
+      14.334527517086826
+    ],
+    "mean_time_per_epoch": 14.316179474443198,
+    "std_time_per_epoch": 0.014428789236303585,
+    "ms_per_batch": 30.590127082143585
+  },
+  {
+    "model": "DCGAN+LS",
+    "dataset": "MNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 468,
+    "measured_epochs": 5,
+    "epoch_times": [
+      14.38555022305809,
+      14.332379448926076,
+      14.34761266107671,
+      14.336201739963144,
+      14.334883757983334
+    ],
+    "mean_time_per_epoch": 14.347325566201471,
+    "std_time_per_epoch": 0.022153618997811982,
+    "ms_per_batch": 30.656678560259554
+  },
+  {
+    "model": "WGAN",
+    "dataset": "MNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 937,
+    "measured_epochs": 5,
+    "epoch_times": [
+      21.06345097301528,
+      21.18018765107263,
+      21.07649623102043,
+      21.082486326922663,
+      21.1532052049879
+    ],
+    "mean_time_per_epoch": 21.111165277403778,
+    "std_time_per_epoch": 0.0520397045515923,
+    "ms_per_batch": 22.530592611957076
+  },
+  {
+    "model": "WGAN-Conv",
+    "dataset": "MNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 937,
+    "measured_epochs": 5,
+    "epoch_times": [
+      43.16817672201432,
+      44.03253815404605,
+      44.28664126503281,
+      44.50660216901451,
+      44.68347336095758
+    ],
+    "mean_time_per_epoch": 44.135486334213056,
+    "std_time_per_epoch": 0.5931169300997003,
+    "ms_per_batch": 47.10297367578768
+  },
+  {
+    "model": "WGAN-GP",
+    "dataset": "MNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 937,
+    "measured_epochs": 5,
+    "epoch_times": [
+      89.56282443599775,
+      90.06385346408933,
+      90.28256988397334,
+      90.48252606706228,
+      90.5910564790247
+    ],
+    "mean_time_per_epoch": 90.19656606602948,
+    "std_time_per_epoch": 0.4074412697511544,
+    "ms_per_batch": 96.26100967559175
+  },
+  {
+    "model": "Vanilla GAN",
+    "dataset": "FashionMNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 468,
+    "measured_epochs": 5,
+    "epoch_times": [
+      12.329474203987047,
+      12.393258073017932,
+      12.281487628002651,
+      12.284944394021295,
+      12.261253668926656
+    ],
+    "mean_time_per_epoch": 12.310083593591116,
+    "std_time_per_epoch": 0.052744810041210406,
+    "ms_per_batch": 26.30359742220324
+  },
+  {
+    "model": "DCGAN",
+    "dataset": "FashionMNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 468,
+    "measured_epochs": 5,
+    "epoch_times": [
+      14.382507972070016,
+      14.364156828960404,
+      14.357956552063115,
+      14.345138075063005,
+      14.435109921032563
+    ],
+    "mean_time_per_epoch": 14.37697386983782,
+    "std_time_per_epoch": 0.03517768993686112,
+    "ms_per_batch": 30.720029636405602
+  },
+  {
+    "model": "DCGAN+LS",
+    "dataset": "FashionMNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 468,
+    "measured_epochs": 5,
+    "epoch_times": [
+      14.335366094019264,
+      14.289851475972682,
+      14.348409289028496,
+      14.334675963968039,
+      14.322356417076662
+    ],
+    "mean_time_per_epoch": 14.326131848013029,
+    "std_time_per_epoch": 0.02227710073761371,
+    "ms_per_batch": 30.61139283763468
+  },
+  {
+    "model": "WGAN",
+    "dataset": "FashionMNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 937,
+    "measured_epochs": 5,
+    "epoch_times": [
+      21.177436065976508,
+      21.069364245980978,
+      21.165764973964542,
+      21.072306868969463,
+      21.10767845006194
+    ],
+    "mean_time_per_epoch": 21.118510120990685,
+    "std_time_per_epoch": 0.05092315471612111,
+    "ms_per_batch": 22.538431292412685
+  },
+  {
+    "model": "WGAN-Conv",
+    "dataset": "FashionMNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 937,
+    "measured_epochs": 5,
+    "epoch_times": [
+      44.19051586498972,
+      44.65217712998856,
+      44.716144188074395,
+      44.67211685504299,
+      44.75486761692446
+    ],
+    "mean_time_per_epoch": 44.59716433100402,
+    "std_time_per_epoch": 0.23077792171387312,
+    "ms_per_batch": 47.59569298933194
+  },
+  {
+    "model": "WGAN-GP",
+    "dataset": "FashionMNIST",
+    "img_size": 32,
+    "channels": 1,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 937,
+    "measured_epochs": 5,
+    "epoch_times": [
+      89.00825668103062,
+      89.007908044965,
+      89.149983108975,
+      89.40405826398637,
+      89.7394622110296
+    ],
+    "mean_time_per_epoch": 89.26193366199732,
+    "std_time_per_epoch": 0.31210850226101605,
+    "ms_per_batch": 95.26353645890856
+  },
+  {
+    "model": "Vanilla GAN",
+    "dataset": "SVHN",
+    "img_size": 32,
+    "channels": 3,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 572,
+    "measured_epochs": 5,
+    "epoch_times": [
+      17.188925951020792,
+      17.151593871065415,
+      17.173158666933887,
+      17.174455489963293,
+      17.169542960007675
+    ],
+    "mean_time_per_epoch": 17.17153538779821,
+    "std_time_per_epoch": 0.013371869531878236,
+    "ms_per_batch": 30.020166761884987
+  },
+  {
+    "model": "DCGAN",
+    "dataset": "SVHN",
+    "img_size": 32,
+    "channels": 3,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 572,
+    "measured_epochs": 5,
+    "epoch_times": [
+      19.70805776992347,
+      19.718728050007485,
+      19.740552005008794,
+      19.676476811990142,
+      19.676576145924628
+    ],
+    "mean_time_per_epoch": 19.704078156570905,
+    "std_time_per_epoch": 0.027744337855962427,
+    "ms_per_batch": 34.44768908491417
+  },
+  {
+    "model": "DCGAN+LS",
+    "dataset": "SVHN",
+    "img_size": 32,
+    "channels": 3,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 572,
+    "measured_epochs": 5,
+    "epoch_times": [
+      19.709781917044893,
+      19.640054260962643,
+      19.927306871046312,
+      19.700721964007244,
+      19.635281341033988
+    ],
+    "mean_time_per_epoch": 19.722629270819017,
+    "std_time_per_epoch": 0.11935891013667334,
+    "ms_per_batch": 34.480121102830445
+  },
+  {
+    "model": "WGAN",
+    "dataset": "SVHN",
+    "img_size": 32,
+    "channels": 3,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 1144,
+    "measured_epochs": 5,
+    "epoch_times": [
+      27.76389375398867,
+      27.966705914004706,
+      27.676491423975676,
+      27.999218790908344,
+      27.801745164906606
+    ],
+    "mean_time_per_epoch": 27.8416110095568,
+    "std_time_per_epoch": 0.1372795348791878,
+    "ms_per_batch": 24.3370725608014
+  },
+  {
+    "model": "WGAN-Conv",
+    "dataset": "SVHN",
+    "img_size": 32,
+    "channels": 3,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 1144,
+    "measured_epochs": 5,
+    "epoch_times": [
+      55.155704092932865,
+      55.3188740669284,
+      55.32610905903857,
+      55.39448643196374,
+      55.460952605935745
+    ],
+    "mean_time_per_epoch": 55.33122525135987,
+    "std_time_per_epoch": 0.11381736217833474,
+    "ms_per_batch": 48.36645563930058
+  },
+  {
+    "model": "WGAN-GP",
+    "dataset": "SVHN",
+    "img_size": 32,
+    "channels": 3,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 1144,
+    "measured_epochs": 5,
+    "epoch_times": [
+      109.86381507397164,
+      109.65076353098266,
+      109.73743200895842,
+      110.11311526305508,
+      110.52249978901818
+    ],
+    "mean_time_per_epoch": 109.97752513319719,
+    "std_time_per_epoch": 0.35097360632948926,
+    "ms_per_batch": 96.13420029125629
+  },
+  {
+    "model": "Vanilla GAN",
+    "dataset": "CelebA",
+    "img_size": 64,
+    "channels": 3,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 1582,
+    "measured_epochs": 5,
+    "epoch_times": [
+      183.98671135900076,
+      183.74161840800662,
+      182.70194895809982,
+      181.06234463199507,
+      184.35320950404275
+    ],
+    "mean_time_per_epoch": 183.16916657222902,
+    "std_time_per_epoch": 1.3280652500766448,
+    "ms_per_batch": 115.78329113288812
+  },
+  {
+    "model": "DCGAN",
+    "dataset": "CelebA",
+    "img_size": 64,
+    "channels": 3,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 1582,
+    "measured_epochs": 5,
+    "epoch_times": [
+      201.0594017090043,
+      202.79636430297978,
+      202.41316540096886,
+      201.9405546480557,
+      200.65003955794964
+    ],
+    "mean_time_per_epoch": 201.77190512379167,
+    "std_time_per_epoch": 0.9021387751959713,
+    "ms_per_batch": 127.54229148153709
+  },
+  {
+    "model": "DCGAN+LS",
+    "dataset": "CelebA",
+    "img_size": 64,
+    "channels": 3,
+    "batch_size": 128,
+    "critic_iters": 1,
+    "num_batches": 1582,
+    "measured_epochs": 5,
+    "epoch_times": [
+      205.62409240810666,
+      205.9637972030323,
+      204.35640098399017,
+      202.52648422389757,
+      203.0653914050199
+    ],
+    "mean_time_per_epoch": 204.3072332448093,
+    "std_time_per_epoch": 1.516078650726062,
+    "ms_per_batch": 129.1449009132802
+  },
+  {
+    "model": "WGAN",
+    "dataset": "CelebA",
+    "img_size": 64,
+    "channels": 3,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 3165,
+    "measured_epochs": 5,
+    "epoch_times": [
+      203.34683717391454,
+      198.54728371102829,
+      202.4082945389673,
+      200.39178403606638,
+      199.82689526001923
+    ],
+    "mean_time_per_epoch": 200.90421894399915,
+    "std_time_per_epoch": 1.9498068340123698,
+    "ms_per_batch": 63.476846427803835
+  },
+  {
+    "model": "WGAN-Conv",
+    "dataset": "CelebA",
+    "img_size": 64,
+    "channels": 3,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 3165,
+    "measured_epochs": 5,
+    "epoch_times": [
+      666.9906035560416,
+      666.9002095540054,
+      659.4471139969537,
+      670.8622784659965,
+      658.8896417950746
+    ],
+    "mean_time_per_epoch": 664.6179694736144,
+    "std_time_per_epoch": 5.229265995797588,
+    "ms_per_batch": 209.98987977049427
+  },
+  {
+    "model": "WGAN-GP",
+    "dataset": "CelebA",
+    "img_size": 64,
+    "channels": 3,
+    "batch_size": 64,
+    "critic_iters": 5,
+    "num_batches": 3165,
+    "measured_epochs": 5,
+    "epoch_times": [
+      1262.8316409930121,
+      1258.206764676026,
+      1259.6035661778878,
+      1264.3654613620602,
+      1259.7250253789825
+    ],
+    "mean_time_per_epoch": 1260.9464917175937,
+    "std_time_per_epoch": 2.55169916449045,
+    "ms_per_batch": 398.403314918671
+  }
+]

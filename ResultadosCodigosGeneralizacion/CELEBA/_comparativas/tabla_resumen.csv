@@ -1,0 +1,7 @@
+Modelo,Arquitectura,Pérdida,FID (media),FID (std),IS (media),IS (std)
+Vanilla GAN,MLP,BCE,233.07,2.09,3.53,0.10
+DCGAN,CNN,BCE,93.86,157.05,2.51,0.81
+DCGAN+LS,CNN,BCE,24.47,0.42,2.90,0.04
+WGAN-MLP,MLP,Wasserstein,213.01,3.00,3.18,0.19
+WGAN-Conv,CNN,Wasserstein,94.76,9.29,2.77,0.15
+WGAN-GP,CNN,Wasserstein,26.61,1.74,2.76,0.02

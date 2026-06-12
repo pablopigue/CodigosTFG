@@ -1,0 +1,19 @@
+\begin{table}[H]
+\centering
+\caption{Tiempo medio por época (en segundos) de cada modelo en cada dataset, medido sobre 5 épocas cronometradas tras una época de warmup. Entre paréntesis, ratio respecto al tiempo de DCGAN en el mismo dataset.}
+\label{tab:benchmark_tiempos}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llcccc}
+\hline
+\textbf{Modelo} & \textbf{Arq.} & \textbf{MNIST} & \textbf{FashionMNIST} & \textbf{SVHN} & \textbf{CelebA} \\
+\hline\hline
+Vanilla GAN & MLP & 12,21 $\pm$ 0,03 ($\times 0,85$) & 12,31 $\pm$ 0,05 ($\times 0,86$) & 17,17 $\pm$ 0,01 ($\times 0,87$) & 183,17 $\pm$ 1,33 ($\times 0,91$) \\
+DCGAN & CNN & 14,32 $\pm$ 0,01 ($\times 1,00$) & 14,38 $\pm$ 0,04 ($\times 1,00$) & 19,70 $\pm$ 0,03 ($\times 1,00$) & 201,77 $\pm$ 0,90 ($\times 1,00$) \\
+DCGAN+LS & CNN & 14,35 $\pm$ 0,02 ($\times 1,00$) & 14,33 $\pm$ 0,02 ($\times 1,00$) & 19,72 $\pm$ 0,12 ($\times 1,00$) & 204,31 $\pm$ 1,52 ($\times 1,01$) \\
+WGAN-MLP & MLP & 21,11 $\pm$ 0,05 ($\times 1,47$) & 21,12 $\pm$ 0,05 ($\times 1,47$) & 27,84 $\pm$ 0,14 ($\times 1,41$) & 200,90 $\pm$ 1,95 ($\times 1,00$) \\
+WGAN-Conv & CNN & 44,14 $\pm$ 0,59 ($\times 3,08$) & 44,60 $\pm$ 0,23 ($\times 3,10$) & 55,33 $\pm$ 0,11 ($\times 2,81$) & 664,62 $\pm$ 5,23 ($\times 3,29$) \\
+WGAN-GP & CNN & 90,20 $\pm$ 0,41 ($\times 6,30$) & 89,26 $\pm$ 0,31 ($\times 6,21$) & 109,98 $\pm$ 0,35 ($\times 5,58$) & 1,260,95 $\pm$ 2,55 ($\times 6,25$) \\
+\hline
+\end{tabular}
+}
+\end{table}
