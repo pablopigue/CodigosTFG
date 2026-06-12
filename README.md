@@ -32,7 +32,6 @@ CodigosTFG/
 ├── Plot_dataset_samples.py           Cuadrículas de muestra de cada dataset.
 ├── Plot_grid_mejor_fid.py            Cuadrículas en el checkpoint de mejor FID.
 ├── Plot_losses_con_zoom_mnist.py     Curvas de pérdida con zoom para ver inestabilidades en MNIST.
-├── regenerar_plots_wgan_mlp.py       Regeneración de gráficas de wasserstein debido a renombrado de WGAN a WGAN-MLP.
 │
 └── README.md
 ```
@@ -144,10 +143,9 @@ cronometra y 5 épocas medidas, con `torch.cuda.synchronize()` antes y
 después de cada una. No calcula FID/IS ni guarda imágenes para que la
 medida refleje únicamente el coste del entrenamiento adversario.
 
-`analyze_benchmark.py` toma los resultados anteriores y genera la tabla
-LaTeX y las gráficas de tiempo por época, tiempo por batch y escalado
-con la resolución.
-
+`analyze_benchmark.py` que se encuentra en /ResultadosCódigosGeneralización/Tiempos
+toma los resultados anteriores y genera la tabla LaTeX y las gráficas de tiempo por época,
+tiempo por batch y escalado con la resolución.
 
 ## Métricas registradas
 
@@ -165,7 +163,7 @@ Cada entrenamiento genera un `metrics_all_runs.csv` con las columnas:
 | `is_mean`   | Inception Score, media                                      |
 | `is_std`    | Inception Score, desviación estándar                        |
 
-Para CycleGAN no se guarda is pues no se calcula y se guardan también:
+Para CycleGAN no se guarda IS pues no se calcula y se guardan también:
 `loss_GAN`, `loss_cycle`, `loss_identity`, `loss_D_A`, `loss_D_B`, `fid_AB`, `fid_BA` y `lr`
 
 
