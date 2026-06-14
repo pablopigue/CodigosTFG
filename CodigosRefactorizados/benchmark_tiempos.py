@@ -20,7 +20,6 @@ Salida:
     - benchmark_results.csv: tabla (dataset, model, mean_time, std_time, ...)
     - benchmark_results.json: misma información en formato legible.
 
-Tiempo estimado total: 1-2 horas en una GTX Titan Xp.
 """
 
 import os
