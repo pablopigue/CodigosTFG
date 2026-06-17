@@ -1,3 +1,4 @@
+> 🌐 [English version](README.en.md)
 # Códigos TFG
 
 Código del Trabajo de Fin de Grado sobre arquitecturas GAN. Se comparan
