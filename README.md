@@ -64,18 +64,22 @@ la cycleGAN.
 
 Está organizado en cinco bloques:
 
-- A. Carga de datos: `build_transform`, `load_dataset` (MNIST,
+- A) Carga de datos: `build_transform`, `load_dataset` (MNIST,
   FashionMNIST, SVHN vía `torchvision`; CelebA vía `ImageFolder`).
-- B. Subconjunto fijo de evaluación: `build_fixed_eval_set` muestrea con
+  
+- B) Subconjunto fijo de evaluación: `build_fixed_eval_set` muestrea con
   semilla 42 las imágenes reales que se usarán para FID/IS, y después
   resetea la semilla para que los runs de entrenamiento sigan siendo
   independientes.
-- C. Métricas: `compute_fid_is` calcula FID e IS con `torchmetrics`.
+  
+- C) Métricas: `compute_fid_is` calcula FID e IS con `torchmetrics`.
   Funciona tanto con generadores MLP (salida plana) como con
   convolucionales (salida 4D) mediante el flag `flatten_output`.
-- D. Inicialización y guardado: `weights_init_dcgan` (init de Radford et
+  
+- D) Inicialización y guardado: `weights_init_dcgan` (init de Radford et
   al.), `save_sample_images`, `save_plot`.
-- E. Multi-run: `make_experiment_dirs`, `save_run_artifacts` (pesos, CSV
+  
+- E) Multi-run: `make_experiment_dirs`, `save_run_artifacts` (pesos, CSV
   y gráficas del primer run) y `aggregate_runs` (promedio de las N
   ejecuciones con bandas de desviación estándar).
 
