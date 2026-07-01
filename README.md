@@ -1,7 +1,7 @@
 > 🌐 [English version](README.en.md)
 # Códigos TFG
 
-Código del Trabajo de Fin de Grado sobre arquitecturas GAN. Se comparan
+Código de mi Trabajo de Fin de Grado sobre arquitecturas GAN. Se comparan
 seis modelos de generación a partir de ruido (Vanilla GAN, DCGAN, DCGAN
 con label smoothing, WGAN con weight clipping, WGAN convolucional y
 WGAN-GP) sobre cuatro datasets (MNIST, FashionMNIST, SVHN y CelebA), y
@@ -20,9 +20,7 @@ IS no tiene sentido en esta arquitectura.
 
 ```
 CodigosTFG/
-├── CodigosConLosQueSeEntreno/        Scripts originales con los que se entrenó MNIST, FashionMNIST y SVHN.
-├── CodigosConQueSeEntrenoCELEBA/     Scripts originales con los que se entrenó CelebA.
-├── CodigosRefactorizados/            Versión modularizada de los anteriores (ver más abajo).
+├── CodigosRefactorizados/            Scripts modularizados de entrenamiento de GANs.
 ├── ResultadosCodigosGeneralizacion/  CSVs y resultados generados por los entrenamientos.
 ├── PlotsArquitecturas/               Códigos usados para crear imágenes de las arquitecturas
 │
@@ -59,13 +57,8 @@ siguiendo el protocolo de Zhu et al. (2017).
 
 ## CodigosRefactorizados/
 
-Los scripts originales para los modelos de generación a partir de ruido
-tenían mucho código duplicado: carga de datos, construcción del subconjunto 
-de evaluación, cálculo de FID/IS, guardado de imágenes, generación de 
-gráficas y agregación multi-run aparecían prácticamente idénticos en 
-cada fichero. En esta versión todo eso se ha movido a `utils.py`, 
-y los scripts de cada modelo se quedan únicamente con su arquitectura, 
-su función de pérdida y su bucle de entrenamiento.
+Contiene los scripts para los modelos de generación a partir de ruido y
+la cycleGAN.
 
 ### `utils.py`
 

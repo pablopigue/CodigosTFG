@@ -338,12 +338,13 @@ def generar_grid_visual(modelos_imagenes, titulo, filepath, ncols=3,
         x = c * (cell_w + gap)
         y = main_title_h + r * (title_h + cell_h + gap)
 
-        # Título de celda
+        # Título de celda (en el color del modelo)
         nombre = MODELOS_CONFIG[clave]["nombre"]
+        color_modelo = MODELOS_CONFIG[clave].get("color", "black")
         bbox_n = draw.textbbox((0, 0), nombre, font=font_label)
         nw = bbox_n[2] - bbox_n[0]
         draw.text((x + (cell_w - nw) // 2, y + 2), nombre,
-                  fill='black', font=font_label)
+                  fill=color_modelo, font=font_label)
 
         # Subtítulo si hay
         if labels_extra and clave in labels_extra:

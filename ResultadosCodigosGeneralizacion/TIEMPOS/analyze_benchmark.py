@@ -120,12 +120,12 @@ n_models = len(MODEL_ORDER)
 bar_width = 0.8 / n_models
 
 colors = {
-    "Vanilla GAN": "#4C72B0",
-    "DCGAN":       "#DD8452",
-    "DCGAN+LS":    "#C44E52",
-    "WGAN-MLP":        "#8172B3",
-    "WGAN-Conv":   "#55A868",
-    "WGAN-GP":     "#CCB974",
+    "Vanilla GAN": "#1f77b4",  # azul
+    "DCGAN":       "#ff7f0e",  # naranja
+    "DCGAN+LS":    "#d62728",  # rojo
+    "WGAN-MLP":    "#2ca02c",  # verde
+    "WGAN-Conv":   "#9467bd",  # morado
+    "WGAN-GP":     "#e377c2",  # rosa
 }
 
 for i, model in enumerate(MODEL_ORDER):

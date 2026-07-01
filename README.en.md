@@ -20,9 +20,7 @@ sense for this architecture.
 
 ```
 CodigosTFG/
-├── CodigosConLosQueSeEntreno/        Original scripts used to train MNIST, FashionMNIST and SVHN.
-├── CodigosConQueSeEntrenoCELEBA/     Original scripts used to train CelebA.
-├── CodigosRefactorizados/            Modularized version of the above (see below).
+├── CodigosRefactorizados/            Modularized scripts for training the GANs.
 ├── ResultadosCodigosGeneralizacion/  CSVs and results produced by the training runs.
 ├── PlotsArquitecturas/               Code used to create the architecture figures.
 │
@@ -59,13 +57,7 @@ of Zhu et al. (2017).
 
 ## CodigosRefactorizados/
 
-The original scripts for the noise-to-image generation models had a lot
-of duplicated code: data loading, building the evaluation subset,
-computing FID/IS, saving images, generating plots and multi-run
-aggregation appeared almost identically in every file. In this version
-all of that has been moved into `utils.py`, and each model's script is
-left with only its architecture, its loss function and its training
-loop.
+The scripts for the noise-to-image generation models and the cycleGAN model.
 
 ### `utils.py`
 
